@@ -8,6 +8,8 @@ RUN mvn install -DskipTests
 ## Package
 FROM openjdk:11.0.1-jre-slim-stretch
 COPY --from=builder /spring-petclinic-rest/target/spring-petclinic-rest-2.2.5.jar /app.jar
+RUN sudo apt update
+RUN sudo apt install maven
 COPY --from=builder /spring-petclinic-rest/src /spring-petclinic-rest
 EXPOSE 9966
 ENTRYPOINT ["java","-jar","/app.jar"]
