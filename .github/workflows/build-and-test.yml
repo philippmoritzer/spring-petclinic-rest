@@ -18,9 +18,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Build Docker Image
-      run: docker build . --file --tag $IMAGE_NAME
+      run: docker build . --file dev.Dockerfile --tag $IMAGE_NAME
 
   Test:
+    needs: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
