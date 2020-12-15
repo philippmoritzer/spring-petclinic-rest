@@ -1,4 +1,4 @@
-name: Build-And-Test
+name: Build-Test-Deploy-Heroku-Dev
 
 on:
   push:
