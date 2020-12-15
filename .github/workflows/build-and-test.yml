@@ -1,13 +1,13 @@
-# This workflow will build a Java project with Maven
-# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
-
 name: Build-And-Test
 
 on:
-  push:
-    branches: [ develop, ci-cd ]
   pull_request:
-    branches: [ develop ]
+    branches:
+      - "*"
+      - "*/*"
+      - "**"
+      - "!master"
+      - "!release"
 
 env:
   IMAGE_NAME_DEV: for_testing_image
@@ -24,42 +24,3 @@ jobs:
       run: docker run -d --name petclinic -p 9966:9966 $IMAGE_NAME_DEV:latest
     - name: Run Maven unit tests in Docker Directory
       run: docker exec -w /spring-petclinic-rest/ petclinic mvn test
-
-  Deploy:
-    runs-on: ubuntu-latest
-    needs: Build-And-Test
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build Docker Prod Image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME_PROD
-      - name: Log into Github Docker Registry
-        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-      - name: Push Docker image
-        run: |
-              IMAGE_ID=docker.pkg.github.com/${{ github.repository }}/$IMAGE_NAME_PROD
-              # Change all uppercase to lowercase
-              IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
-              # Strip git ref prefix from version
-              VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
-              # Strip "v" prefix from tag name
-              [[ "${{ github.ref }}" == "refs/tags/"* ]] && VERSION=$(echo $VERSION | sed -e 's/^v//')
-              # Use Docker `latest` tag convention
-              [ "$VERSION" == "master" ] && VERSION=latest
-              echo IMAGE_ID=$IMAGE_ID
-              echo VERSION=$VERSION
-              docker tag $IMAGE_NAME_PROD $IMAGE_ID:$VERSION
-              docker push $IMAGE_ID:$VERSION
-      - name: Login to Heroku Container Registry
-        env:
-          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
-        run: heroku container:login
-      - name: Push to Heroku Container Registry
-        env:
-          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
-        run: heroku container:push -a ${{secrets.HEROKU_DEV_ENV_REST}} web
-      - name: Release
-        env:
-          HEROKU_API_KEY: ${{secrets.HEROKU_API_KEY}}
-        run: heroku container:release -a ${{secrets.HEROKU_DEV_ENV_REST}} web
-
-
