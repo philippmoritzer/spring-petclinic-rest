@@ -6,7 +6,7 @@ WORKDIR /spring-petclinic-rest
 RUN mvn install -DskipTests
 
 ## Package
-FROM openjdk:11.0.1-jre-slim-stretch
+FROM openjdk:11.0.1-alpine
 COPY --from=builder /spring-petclinic-rest/target/spring-petclinic-rest-2.2.5.jar /app.jar
 RUN apk update && apk add maven
 COPY --from=builder /spring-petclinic-rest/src /spring-petclinic-rest
