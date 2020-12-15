@@ -11,7 +11,7 @@ on:
 
 env:
   IMAGE_NAME_DEV: for_testing_image
-  IMAGE_NAME_PROD: moritzer/petclinic
+  IMAGE_NAME_PROD: moritzer-petclinic
 
 jobs:
   Build-And-Test:
@@ -23,10 +23,11 @@ jobs:
     - name: Run Docker Container
       run: docker run -d --name petclinic -p 9966:9966 $IMAGE_NAME_DEV:latest
     - name: Run Maven unit tests in Docker Directory
-      run: mvn test
+      run: docker exec -w /spring-petclinic-rest/ petclinic mvn test
 
   Deploy:
     runs-on: ubuntu-latest
+    needs: Build-And-Test
     steps:
       - uses: actions/checkout@v2
       - name: Build Docker Prod Image
