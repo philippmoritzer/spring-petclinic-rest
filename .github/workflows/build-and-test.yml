@@ -1,0 +1,26 @@
+name: Build-And-Test
+
+on:
+  pull_request:
+    branches:
+      - "*"
+      - "*/*"
+      - "**"
+      - "!master"
+      - "!release"
+
+env:
+  IMAGE_NAME_DEV: for_testing_image
+  IMAGE_NAME_PROD: moritzer-petclinic
+
+jobs:
+  Build-And-Test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build Docker Dev Image for testing purposes
+      run: docker build . --file dev.Dockerfile --tag $IMAGE_NAME_DEV
+    - name: Run Docker Container
+      run: docker run -d --name petclinic -p 9966:9966 $IMAGE_NAME_DEV:latest
+    - name: Run Maven unit tests in Docker Directory
+      run: docker exec -w /spring-petclinic-rest/ petclinic mvn test
