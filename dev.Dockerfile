@@ -9,6 +9,6 @@ RUN mvn install -DskipTests
 FROM openjdk:16-jdk-alpine
 COPY --from=builder /spring-petclinic-rest/target/spring-petclinic-rest-2.2.5.jar /app.jar
 RUN apk update && apk add maven
-COPY --from=builder /spring-petclinic-rest/src /spring-petclinic-rest
+COPY --from=builder /spring-petclinic-rest /spring-petclinic-rest
 EXPOSE 9966
 ENTRYPOINT ["java","-jar","/app.jar"]
