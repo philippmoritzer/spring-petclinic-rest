@@ -48,6 +48,8 @@ public abstract class EntityUtils {
                 return entity;
             }
         }
+
+        System.out.println("test");
         throw new ObjectRetrievalFailureException(entityClass, entityId);
     }
 
