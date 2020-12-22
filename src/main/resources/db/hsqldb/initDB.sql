@@ -60,10 +60,13 @@ CREATE TABLE visits (
   id          INTEGER IDENTITY PRIMARY KEY,
   pet_id      INTEGER NOT NULL,
   visit_date  DATE,
-  description VARCHAR(255)
+  description VARCHAR(255)-- ,
+  -- vet_id   INTEGER NOT NULL
 );
 ALTER TABLE visits ADD CONSTRAINT fk_visits_pets FOREIGN KEY (pet_id) REFERENCES pets (id);
 CREATE INDEX visits_pet_id ON visits (pet_id);
+-- ALTER TABLE visits ADD CONSTRAINT fk_vets FOREIGN KEY (vet_id) REFERENCES vets (id);
+-- CREATE INDEX vet_id ON visits (vet_id);
 
 CREATE  TABLE users (
   username    VARCHAR(20) NOT NULL ,
