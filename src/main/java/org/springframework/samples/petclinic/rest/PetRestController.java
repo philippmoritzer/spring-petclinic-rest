@@ -52,6 +52,16 @@ public class PetRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{searchTerm}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Pet>> getPetSearch(@PathVariable("searchTerm") String searchTerm) {
+		if (searchTerm == null) {
+			searchTerm = "";
+		}
+		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm);
+		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
+	}
+
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/{petId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Pet> getPet(@PathVariable("petId") int petId){
@@ -71,6 +81,8 @@ public class PetRestController {
 		}
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
+
+	
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/pettypes", method = RequestMethod.GET, produces = "application/json")

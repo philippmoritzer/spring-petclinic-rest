@@ -284,8 +284,23 @@ public class ClinicServiceImpl implements ClinicService {
 	public Collection<Visit> findVisitsByPetId(int petId) {
 		return visitRepository.findByPetId(petId);
 	}
-	
-	
 
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<Owner> findOwnersBySearchTerm(String searchTerm) throws DataAccessException {
+		return ownerRepository.findBySearchTerm(searchTerm);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<Pet> findPetsBySearchTerm(String searchTerm) throws DataAccessException {
+		return petRepository.findBySearchTerm(searchTerm);
+	}
+
+	@Override
+	@Transactional(readOnly = true)
+	public Collection<Visit> findVisitsBySearchTerm(String searchTerm) throws DataAccessException {
+		return visitRepository.findBySearchTerm(searchTerm);
+	}
 
 }

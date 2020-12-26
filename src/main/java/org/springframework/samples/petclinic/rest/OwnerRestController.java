@@ -52,6 +52,16 @@ public class OwnerRestController {
 	private ClinicService clinicService;
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{searchTerm}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Owner>> getOwnerSearch(@PathVariable("searchTerm") String searchTerm) {
+		if (searchTerm == null) {
+			searchTerm = "";
+		}
+		Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm(searchTerm);
+		return new ResponseEntity<Collection<Owner>>(owners, HttpStatus.OK);
+	}
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/*/lastname/{lastName}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Owner>> getOwnersList(@PathVariable("lastName") String ownerLastName) {
 		if (ownerLastName == null) {

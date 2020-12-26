@@ -52,6 +52,16 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{searchTerm}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getVisitSearch(@PathVariable("searchTerm") String searchTerm) {
+		if (searchTerm == null) {
+			searchTerm = "";
+		}
+		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm);
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getAllVisits(){
