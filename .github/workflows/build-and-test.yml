@@ -8,6 +8,9 @@ on:
       - "**"
       - "!master"
       - "!release"
+  push:
+    branches:
+      - "postman-testsuite-ci"
 
 env:
   IMAGE_NAME_DEV: for_testing_image
@@ -24,3 +27,10 @@ jobs:
       run: docker run -d --name petclinic -p 9966:9966 $IMAGE_NAME_DEV:latest
     - name: Run Maven unit tests in Docker Directory
       run: docker exec -w /spring-petclinic-rest/ petclinic mvn test
+    - name: Setup Node-environment for Postman Tests
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Install Newman (Postman Headless-Runner)
+      run: npm install -g newman
+    - name: newman run https://www.getpostman.com/collections/aa0611affb8560601a98?apikey=${{secrets.}}
