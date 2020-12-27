@@ -33,4 +33,5 @@ jobs:
         node-version: '12.x'
     - name: Install Newman (Postman Headless-Runner)
       run: npm install -g newman
-    - name: newman run https://www.getpostman.com/collections/aa0611affb8560601a98?apikey=${{secrets.}}
+    - name: Run Postman Test Collection
+      run: newman run https://www.getpostman.com/collections/aa0611affb8560601a98?apikey=${{secrets.}}
