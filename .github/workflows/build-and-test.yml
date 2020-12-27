@@ -8,9 +8,6 @@ on:
       - "**"
       - "!master"
       - "!release"
-  push:
-    branches:
-      - "postman-testsuite-ci"
 
 env:
   IMAGE_NAME_DEV: for_testing_image
