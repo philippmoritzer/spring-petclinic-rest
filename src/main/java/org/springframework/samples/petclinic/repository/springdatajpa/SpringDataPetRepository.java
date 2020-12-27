@@ -44,6 +44,6 @@ public interface SpringDataPetRepository extends PetRepository, Repository<Pet, 
     @Override
     @Query("SELECT pet, ptype FROM Pet pet JOIN pet.type ptype WHERE "
     + "UPPER(pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
-    + "OR ptype.name LIKE :searchTerm%")
+    + "OR UPPER(ptype.name) LIKE concat('%',:searchTerm,'%')")
     Collection<Pet> findBySearchTerm(@Param("searchTerm") String searchTerm);
 }

@@ -16,6 +16,7 @@
 package org.springframework.samples.petclinic.service.clinicService;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.Collection;
 import java.util.Date;
@@ -65,6 +66,82 @@ public abstract class AbstractClinicServiceTests {
 
         owners = this.clinicService.findOwnerByLastName("Daviss");
         assertThat(owners.isEmpty()).isTrue();
+    }
+
+    @Test
+    public void shouldFindOwnersBySearchTerm() {
+        // first name
+        Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm("Betty");
+        assertThat(owners.size()).isEqualTo(1);
+
+        // ignore case
+        owners = this.clinicService.findOwnersBySearchTerm("betty");
+        assertThat(owners.size()).isEqualTo(1);
+
+        // contains
+        owners = this.clinicService.findOwnersBySearchTerm("etty");
+        assertThat(owners.size()).isEqualTo(1);
+
+        // city
+        owners = this.clinicService.findOwnersBySearchTerm("madison");
+        assertThat(owners.size()).isEqualTo(4);
+
+        // address
+        owners = this.clinicService.findOwnersBySearchTerm("maple");
+        assertThat(owners.size()).isEqualTo(1);
+
+        // telephone
+        owners = this.clinicService.findOwnersBySearchTerm("6085551023");
+        assertThat(owners.size()).isEqualTo(1);
+
+        // special characters
+        owners = this.clinicService.findOwnersBySearchTerm("( ͡° ͜ʖ ͡°)");
+        assertNotNull(owners);
+        assertThat(owners.size()).isEqualTo(0);
+
+        // query language
+        owners = this.clinicService.findOwnersBySearchTerm("DELETE FROM Owner owner WHERE owner.firstName LIKE 'Betty'");
+        assertThat(owners.size()).isEqualTo(0);
+        owners = this.clinicService.findOwnersBySearchTerm("Betty");
+        assertThat(owners.size()).isEqualTo(1);
+    }
+
+    @Test
+    public void shouldFindPetsBySearchTerm() {
+        // name
+        Collection<Pet> pets = this.clinicService.findPetsBySearchTerm("Max");
+        assertThat(pets.size()).isEqualTo(1);
+
+        // ignore case
+        pets = this.clinicService.findPetsBySearchTerm("maX");
+        assertThat(pets.size()).isEqualTo(1);
+
+        // contains 
+        pets = this.clinicService.findPetsBySearchTerm("ax");
+        assertThat(pets.size()).isEqualTo(1);
+
+        // find by type 
+        pets = this.clinicService.findPetsBySearchTerm("dog");
+        assertThat(pets.size()).isEqualTo(4);
+    }
+
+    @Test
+    public void shouldFindVisitsBySearchTerm() {
+        // description
+        Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm("rabies");
+        assertThat(visits.size()).isEqualTo(2);
+
+        // ignore case
+        visits = this.clinicService.findVisitsBySearchTerm("rAbIes");
+        assertThat(visits.size()).isEqualTo(2);
+
+        // contains
+        visits = this.clinicService.findVisitsBySearchTerm("abies");
+        assertThat(visits.size()).isEqualTo(2);
+        
+        // pet name
+        visits = this.clinicService.findVisitsBySearchTerm("max");
+        assertThat(visits.size()).isEqualTo(2);
     }
 
     @Test

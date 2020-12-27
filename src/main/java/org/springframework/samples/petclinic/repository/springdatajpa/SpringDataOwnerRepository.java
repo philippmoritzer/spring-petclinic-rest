@@ -41,9 +41,9 @@ public interface SpringDataOwnerRepository extends OwnerRepository, Repository<O
 
     @Override
     @Query("SELECT owner FROM Owner owner WHERE "
-    + "UPPER(owner.firstName) LIKE concat(UPPER(:searchTerm), '%')" 
-    + "OR UPPER(owner.lastName) LIKE concat(UPPER(:searchTerm), '%')"
-    + "OR UPPER(owner.city) LIKE concat(UPPER(:searchTerm), '%')"
+    + "UPPER(owner.firstName) LIKE concat('%',UPPER(:searchTerm), '%')" 
+    + "OR UPPER(owner.lastName) LIKE concat('%',UPPER(:searchTerm), '%')"
+    + "OR UPPER(owner.city) LIKE concat('%',UPPER(:searchTerm), '%')"
     + "OR UPPER(owner.address) LIKE concat('%',UPPER(:searchTerm),'%')"
     + "OR owner.telephone LIKE concat('%',:searchTerm,'%')")
     Collection<Owner> findBySearchTerm(@Param("searchTerm") String searchTerm);
