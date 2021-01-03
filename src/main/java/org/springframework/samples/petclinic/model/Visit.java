@@ -153,4 +153,14 @@ public class Visit extends BaseEntity {
         this.vet = vet;
     }
 
+    @Override
+    public String toString() {
+        return "Visit{" +
+            "date=" + date +
+            ", description='" + description + '\'' +
+            ", pet=" + pet +
+            ", vet=" + vet +
+            '}';
+    }
+
 }
