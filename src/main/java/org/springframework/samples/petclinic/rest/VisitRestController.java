@@ -76,8 +76,6 @@ public class VisitRestController {
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json")
 	public ResponseEntity<Visit> addVisit(@RequestBody @Valid Visit visit, BindingResult bindingResult, UriComponentsBuilder ucBuilder){
-		System.out.println("Hello");
-		System.out.println(bindingResult.toString());
 		BindingErrorsResponse errors = new BindingErrorsResponse();
 		HttpHeaders headers = new HttpHeaders();
 		if(bindingResult.hasErrors() || (visit == null) || (visit.getPet() == null)){
@@ -85,8 +83,6 @@ public class VisitRestController {
 			headers.add("errors", errors.toJSON());
 			return new ResponseEntity<Visit>(headers, HttpStatus.BAD_REQUEST);
 		}
-		System.out.println("Zeile 88");
-		System.out.println(visit.toString());
 		this.clinicService.saveVisit(visit);
 		headers.setLocation(ucBuilder.path("/api/visits/{id}").buildAndExpand(visit.getId()).toUri());
 		return new ResponseEntity<Visit>(visit, headers, HttpStatus.CREATED);
@@ -109,6 +105,7 @@ public class VisitRestController {
 		currentVisit.setDate(visit.getDate());
 		currentVisit.setDescription(visit.getDescription());
 		currentVisit.setPet(visit.getPet());
+		currentVisit.setVet(visit.getVet());
 		this.clinicService.saveVisit(currentVisit);
 		return new ResponseEntity<Visit>(currentVisit, HttpStatus.NO_CONTENT);
 	}
