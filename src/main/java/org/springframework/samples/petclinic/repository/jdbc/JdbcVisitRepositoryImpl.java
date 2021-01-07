@@ -79,7 +79,8 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
             .addValue("id", visit.getId())
             .addValue("visit_date", visit.getDate())
             .addValue("description", visit.getDescription())
-            .addValue("pet_id", visit.getPet().getId());
+            .addValue("pet_id", visit.getPet().getId())
+            .addValue("vet_id", visit.getVet().getId());
     }
 
     @Override
@@ -101,7 +102,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
         return visits;
     }
-    
+
 	@Override
 	public Visit findById(int id) throws DataAccessException {
 		Visit visit;
@@ -133,7 +134,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 			visit.setId(newKey.intValue());
 		} else {
 			this.namedParameterJdbcTemplate.update(
-					"UPDATE visits SET visit_date=:visit_date, description=:description, pet_id=:pet_id WHERE id=:id ",
+					"UPDATE visits SET visit_date=:visit_date, description=:description, pet_id=:pet_id, vet_id=:vet_id WHERE id=:id ",
 					createVisitParameterSource(visit));
 		}
 	}
