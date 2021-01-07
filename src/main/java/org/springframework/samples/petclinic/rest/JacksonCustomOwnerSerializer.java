@@ -94,10 +94,10 @@ public class JacksonCustomOwnerSerializer extends StdSerializer<Owner> {
 				jgen.writeStringField("date", formatter.format(visit.getDate()));
 				jgen.writeStringField("description", visit.getDescription());
 				jgen.writeNumberField("pet", visit.getPet().getId());
-				jgen.writeNumberField("vet", visit.getVet().getId());
-				jgen.writeStringField("vetFirstName", visit.getVet().getFirstName());
-				jgen.writeStringField("vetLastName", visit.getVet().getLastName());
-				jgen.writeStringField("vetName", visit.getVet().getFirstName() + " " + visit.getVet().getLastName());
+				//jgen.writeNumberField("vet", visit.getVet().getId());
+				//jgen.writeStringField("vetFirstName", visit.getVet().getFirstName());
+				//jgen.writeStringField("vetLastName", visit.getVet().getLastName());
+				//jgen.writeStringField("vetName", visit.getVet().getFirstName() + " " + visit.getVet().getLastName());
 				jgen.writeEndObject(); // visit
 			}
 			jgen.writeEndArray(); // visits
