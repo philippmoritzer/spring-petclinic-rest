@@ -33,9 +33,5 @@ import org.springframework.samples.petclinic.repository.VisitRepository;
 
 @Profile("spring-data-jpa")
 public interface SpringDataVisitRepository extends VisitRepository, Repository<Visit, Integer>, VisitRepositoryOverride {
-    @Override
-    @Query("SELECT visit, pet FROM Visit visit JOIN visit.pet pet WHERE "
-    + "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
-    + "OR UPPER(pet.name) LIKE concat('%', UPPER(:searchTerm), '%')")
-    Collection<Visit> findBySearchTerm(@Param("searchTerm") String searchTerm);
+
 }

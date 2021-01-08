@@ -53,12 +53,21 @@ public class VisitRestController {
 	private ClinicService clinicService;
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
-	@RequestMapping(value = "/search/{searchTerm}", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<Collection<Visit>> getVisitSearch(@PathVariable("searchTerm") String searchTerm) {
-		if (searchTerm == null) {
-			searchTerm = "";
+	@RequestMapping(value = "/search/{queryString}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getVisitSearch(@PathVariable("queryString") String queryString) {
+		if (queryString == null) {
+			queryString = "";
 		}
-		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm);
+		if (queryString.length() > 50 || queryString.split("&").length > 2) {
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.FORBIDDEN);
+		}
+
+		String[] splits = queryString.split("&");
+		String searchTerm = splits[0].replace("searchTerm=", "");
+		boolean noLimit = Boolean.parseBoolean(splits[1].replace("noLimit=", "")); // will evaluate to false if string doesn't match "true" or "false"
+
+
+		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
 	}
 

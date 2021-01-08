@@ -71,77 +71,110 @@ public abstract class AbstractClinicServiceTests {
     @Test
     public void shouldFindOwnersBySearchTerm() {
         // first name
-        Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm("Betty");
+        Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm("Betty", false);
         assertThat(owners.size()).isEqualTo(1);
 
         // ignore case
-        owners = this.clinicService.findOwnersBySearchTerm("betty");
+        owners = this.clinicService.findOwnersBySearchTerm("betty",false);
         assertThat(owners.size()).isEqualTo(1);
 
         // contains
-        owners = this.clinicService.findOwnersBySearchTerm("etty");
+        owners = this.clinicService.findOwnersBySearchTerm("etty",false);
         assertThat(owners.size()).isEqualTo(1);
 
         // city
-        owners = this.clinicService.findOwnersBySearchTerm("madison");
+        owners = this.clinicService.findOwnersBySearchTerm("madison",false);
         assertThat(owners.size()).isEqualTo(4);
 
         // address
-        owners = this.clinicService.findOwnersBySearchTerm("maple");
+        owners = this.clinicService.findOwnersBySearchTerm("maple",false);
         assertThat(owners.size()).isEqualTo(1);
 
         // telephone
-        owners = this.clinicService.findOwnersBySearchTerm("6085551023");
+        owners = this.clinicService.findOwnersBySearchTerm("6085551023",false);
         assertThat(owners.size()).isEqualTo(1);
 
         // special characters
-        owners = this.clinicService.findOwnersBySearchTerm("( ͡° ͜ʖ ͡°)");
+        owners = this.clinicService.findOwnersBySearchTerm("( ͡° ͜ʖ ͡°)",false);
         assertNotNull(owners);
         assertThat(owners.size()).isEqualTo(0);
 
         // query language
-        owners = this.clinicService.findOwnersBySearchTerm("DELETE FROM Owner owner WHERE owner.firstName LIKE 'Betty'");
+        owners = this.clinicService.findOwnersBySearchTerm("DELETE FROM Owner owner WHERE owner.firstName LIKE 'Betty'",false);
         assertThat(owners.size()).isEqualTo(0);
-        owners = this.clinicService.findOwnersBySearchTerm("Betty");
-        assertThat(owners.size()).isEqualTo(1);
     }
 
     @Test
     public void shouldFindPetsBySearchTerm() {
         // name
-        Collection<Pet> pets = this.clinicService.findPetsBySearchTerm("Max");
+        Collection<Pet> pets = this.clinicService.findPetsBySearchTerm("Max", false);
         assertThat(pets.size()).isEqualTo(1);
 
         // ignore case
-        pets = this.clinicService.findPetsBySearchTerm("maX");
+        pets = this.clinicService.findPetsBySearchTerm("maX", false);
         assertThat(pets.size()).isEqualTo(1);
 
         // contains 
-        pets = this.clinicService.findPetsBySearchTerm("ax");
+        pets = this.clinicService.findPetsBySearchTerm("ax", false);
         assertThat(pets.size()).isEqualTo(1);
 
+        //owner last name
+        pets = this.clinicService.findPetsBySearchTerm("franklin", false);
+        assertThat(pets.size()).isEqualTo(1);
+
+        // owner first name
+        pets = this.clinicService.findPetsBySearchTerm("jean", false);
+        assertThat(pets.size()).isEqualTo(2);
+
         // find by type 
-        pets = this.clinicService.findPetsBySearchTerm("dog");
+        pets = this.clinicService.findPetsBySearchTerm("dog", false);
         assertThat(pets.size()).isEqualTo(4);
+
+        // special characters
+        pets = this.clinicService.findPetsBySearchTerm("( ͡° ͜ʖ ͡°)", false);
+        assertNotNull(pets);
+        assertThat(pets.size()).isEqualTo(0);
+
+        // query language
+        pets = this.clinicService.findPetsBySearchTerm("DELETE FROM Pets owner WHERE pet.name LIKE 'Max'", false);
+        assertNotNull(pets);
+        assertThat(pets.size()).isEqualTo(0);
     }
 
     @Test
     public void shouldFindVisitsBySearchTerm() {
         // description
-        Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm("rabies");
+        Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm("rabies", false);
         assertThat(visits.size()).isEqualTo(2);
 
         // ignore case
-        visits = this.clinicService.findVisitsBySearchTerm("rAbIes");
+        visits = this.clinicService.findVisitsBySearchTerm("rAbIes", false);
         assertThat(visits.size()).isEqualTo(2);
 
         // contains
-        visits = this.clinicService.findVisitsBySearchTerm("abies");
+        visits = this.clinicService.findVisitsBySearchTerm("abies", false);
         assertThat(visits.size()).isEqualTo(2);
         
         // pet name
-        visits = this.clinicService.findVisitsBySearchTerm("max");
+        visits = this.clinicService.findVisitsBySearchTerm("max", false);
         assertThat(visits.size()).isEqualTo(2);
+
+        //owner name
+        visits = this.clinicService.findVisitsBySearchTerm("coleman", false);
+        assertThat(visits.size()).isEqualTo(4);
+
+        visits = this.clinicService.findVisitsBySearchTerm("jean", false);
+        assertThat(visits.size()).isEqualTo(4);
+
+        // special characters
+        visits = this.clinicService.findVisitsBySearchTerm("( ͡° ͜ʖ ͡°)", false);
+        assertNotNull(visits);
+        assertThat(visits.size()).isEqualTo(0);
+
+        // query language
+        visits = this.clinicService.findVisitsBySearchTerm("DELETE FROM Visits visit WHERE visit.description LIKE 'spayed'", false);
+        assertNotNull(visits);
+        assertThat(visits.size()).isEqualTo(0);
     }
 
     @Test

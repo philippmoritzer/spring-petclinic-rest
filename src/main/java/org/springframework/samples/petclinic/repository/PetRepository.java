@@ -55,14 +55,14 @@ public interface PetRepository {
      * Retrieve a <code>Pet</code> from the data store by id.
      *
      * @param searchTerm the term to search for
+     * @param noLimit limit searchresults to a max amount
      * @return Collection of type Pet matching the searchterm
      * @throws org.springframework.dao.DataRetrievalFailureException if not found
      */
-    Collection<Pet> findBySearchTerm(String searchTerm) throws DataAccessException;
+    Collection<Pet> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException;
 
     /**
      * Save a <code>Pet</code> to the data store, either inserting or updating it.
-     *
      * @param pet the <code>Pet</code> to save
      * @see BaseEntity#isNew
      */

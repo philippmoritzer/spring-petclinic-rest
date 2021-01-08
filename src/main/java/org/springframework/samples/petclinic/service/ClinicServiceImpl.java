@@ -287,20 +287,20 @@ public class ClinicServiceImpl implements ClinicService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public Collection<Owner> findOwnersBySearchTerm(String searchTerm) throws DataAccessException {
-		return ownerRepository.findBySearchTerm(searchTerm);
+	public Collection<Owner> findOwnersBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		return ownerRepository.findBySearchTerm(searchTerm, noLimit);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Collection<Pet> findPetsBySearchTerm(String searchTerm) throws DataAccessException {
-		return petRepository.findBySearchTerm(searchTerm);
+	public Collection<Pet> findPetsBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		return petRepository.findBySearchTerm(searchTerm, noLimit);
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Collection<Visit> findVisitsBySearchTerm(String searchTerm) throws DataAccessException {
-		return visitRepository.findBySearchTerm(searchTerm);
+	public Collection<Visit> findVisitsBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		return visitRepository.findBySearchTerm(searchTerm, noLimit);
 	}
 
 }

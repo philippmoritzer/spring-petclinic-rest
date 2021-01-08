@@ -32,21 +32,11 @@ import org.springframework.samples.petclinic.repository.OwnerRepository;
  */
 
 @Profile("spring-data-jpa")
-public interface SpringDataOwnerRepository extends OwnerRepository, Repository<Owner, Integer> {
+public interface SpringDataOwnerRepository extends OwnerRepository, Repository<Owner, Integer>, OwnerRepositoryOverride {
 
     @Override
     @Query("SELECT DISTINCT owner FROM Owner owner left join fetch owner.pets WHERE owner.lastName LIKE :lastName%")
     Collection<Owner> findByLastName(@Param("lastName") String lastName);
-
-
-    @Override
-    @Query("SELECT owner FROM Owner owner WHERE "
-    + "UPPER(owner.firstName) LIKE concat('%',UPPER(:searchTerm), '%')" 
-    + "OR UPPER(owner.lastName) LIKE concat('%',UPPER(:searchTerm), '%')"
-    + "OR UPPER(owner.city) LIKE concat('%',UPPER(:searchTerm), '%')"
-    + "OR UPPER(owner.address) LIKE concat('%',UPPER(:searchTerm),'%')"
-    + "OR owner.telephone LIKE concat('%',:searchTerm,'%')")
-    Collection<Owner> findBySearchTerm(@Param("searchTerm") String searchTerm);
 
     @Override
     @Query("SELECT owner FROM Owner owner left join fetch owner.pets WHERE owner.id =:id")

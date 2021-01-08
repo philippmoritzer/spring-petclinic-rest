@@ -16,8 +16,11 @@
 
 package org.springframework.samples.petclinic.repository.springdatajpa;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
@@ -43,5 +46,19 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
         }
 	}
 
+	@Override
+    public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) {
+        TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE "
+		+ "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
+		+ "OR UPPER(visit.pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(visit.pet.owner.firstName) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(visit.pet.owner.lastName) LIKE concat('%', UPPER(:searchTerm), '%')", Visit.class);
+
+        query.setParameter("searchTerm", searchTerm);
+        if (!noLimit){
+            query.setMaxResults(5);  
+        } 
+		return query.getResultList();
+	}
 
 }
