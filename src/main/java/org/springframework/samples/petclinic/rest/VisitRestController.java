@@ -52,6 +52,13 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+
+
+	//HIER MUSS DIE ABFRAGE HIN
+
+
+
+
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getAllVisits(){
