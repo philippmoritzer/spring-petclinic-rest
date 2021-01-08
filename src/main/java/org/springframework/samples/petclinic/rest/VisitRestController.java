@@ -52,12 +52,29 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+	/*
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getPastVisitsByVet(@PathVariable("vetId") int vetId){
+		Collection<Visit> visits = new ArrayList<Visit>();
+		visits.addAll(this.clinicService.getPastVisitsByVet(vetId));
+		if (visits.isEmpty()){
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
 
-
-	//HIER MUSS DIE ABFRAGE HIN
-
-
-
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getPlannedVisitsByVet(@PathVariable("vetId") int vetId){
+		Collection<Visit> visits = new ArrayList<Visit>();
+		visits.addAll(this.clinicService.getPlannedVisitsByVet(vetId));
+		if (visits.isEmpty()){
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+	*/
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")

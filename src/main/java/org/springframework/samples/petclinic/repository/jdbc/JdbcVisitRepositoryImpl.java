@@ -35,6 +35,8 @@ import javax.sql.DataSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
         this.insertVisit = new SimpleJdbcInsert(dataSource)
             .withTableName("visits")
-            .usingGeneratedKeyColumns("id");
+			.usingGeneratedKeyColumns("id");
     }
 
 
@@ -101,7 +103,37 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
         }
 
         return visits;
-    }
+	}
+	
+
+
+
+	//java.sql.Date date = new java.sql.Date(new java.util.Date().getTime());
+
+	/*
+	@Override
+	public Collection<Visit> getPlannedVisitsByVet(int id) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT id as visit_id, pets.id as pets_id, visit_date, description FROM visits LEFT JOIN pets ON visits.pet_id = pets.id",
+				params, new JdbcVisitRowMapperExt());
+	}
+
+	@Override
+	public Collection<Visit> getPastVisitsByVet(int id) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM visits WHERE vet_id = id ",
+				params, new JdbcVisitRowMapperExt());
+	}
+	*/
+
+
+
+
+
+
+
 
 	@Override
 	public Visit findById(int id) throws DataAccessException {
