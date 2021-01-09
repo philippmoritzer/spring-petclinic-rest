@@ -38,6 +38,7 @@ import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.clinicService.ApplicationTestConfig;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -136,7 +137,16 @@ public class OwnerRestControllerTests {
         visit.setPet(pet);
         visit.setDate(new Date());
         visit.setDescription("test" + id);
+        visit.setVet(getTestVetForVisit());
         return visit;
+    }
+
+    private Vet getTestVetForVisit(){
+        Vet vet = new Vet();
+            vet.setId(2);
+            vet.setFirstName("Helen");
+            vet.setLastName("Leary");
+         return vet;
     }
 
     @Test
