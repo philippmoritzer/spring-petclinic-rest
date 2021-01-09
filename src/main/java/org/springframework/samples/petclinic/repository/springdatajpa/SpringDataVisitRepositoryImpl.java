@@ -43,5 +43,20 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
         }
 	}
 
+	@Override
+	public Collection<Visit> getPlannedVisitsByVet(int id) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM visits WHERE vet_id = id AND visit_date > '2013-01-04'",
+				params, new JdbcVisitRowMapperExt());
+	}
+
+	@Override
+	public Collection<Visit> getPastVisitsByVet(int id) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM visits WHERE vet_id = id AND visit_date <= '2013-01-04",
+				params, new JdbcVisitRowMapperExt());
+	}
 
 }
