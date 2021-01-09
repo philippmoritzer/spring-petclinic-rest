@@ -110,12 +110,11 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
 	//java.sql.Date date = new java.sql.Date(new java.util.Date().getTime());
 
-	/*
 	@Override
 	public Collection<Visit> getPlannedVisitsByVet(int id) throws DataAccessException {
 		Map<String, Object> params = new HashMap<>();
 		return this.namedParameterJdbcTemplate.query(
-				"SELECT id as visit_id, pets.id as pets_id, visit_date, description FROM visits LEFT JOIN pets ON visits.pet_id = pets.id",
+				"SELECT * FROM visits WHERE vet_id = id AND visit_date > '2013-01-04'",
 				params, new JdbcVisitRowMapperExt());
 	}
 
@@ -123,10 +122,9 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 	public Collection<Visit> getPastVisitsByVet(int id) throws DataAccessException {
 		Map<String, Object> params = new HashMap<>();
 		return this.namedParameterJdbcTemplate.query(
-				"SELECT * FROM visits WHERE vet_id = id ",
+				"SELECT * FROM visits WHERE vet_id = id AND visit_date <= '2013-01-04",
 				params, new JdbcVisitRowMapperExt());
 	}
-	*/
 
 
 

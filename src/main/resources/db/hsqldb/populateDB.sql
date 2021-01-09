@@ -51,6 +51,9 @@ INSERT INTO visits VALUES (1, 7, '2013-01-01', 'rabies shot', 1);
 INSERT INTO visits VALUES (2, 8, '2013-01-02', 'rabies shot', 2);
 INSERT INTO visits VALUES (3, 8, '2013-01-03', 'neutered', 2);
 INSERT INTO visits VALUES (4, 7, '2013-01-04', 'spayed', 4);
+INSERT INTO visits VALUES (4, 7, '2013-01-07', 'neutered', 3);
+INSERT INTO visits VALUES (4, 7, '2013-01-08', 'spayed', 4);
+INSERT INTO visits VALUES (4, 7, '2013-01-05', 'neutered', 5);
 
 INSERT INTO users(username,password,enabled) VALUES ('admin','{noop}admin', true);
 

@@ -52,7 +52,7 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
-	/*
+	
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/{vetId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getPastVisitsByVet(@PathVariable("vetId") int vetId){
@@ -74,7 +74,7 @@ public class VisitRestController {
 		}
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
 	}
-	*/
+	
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
