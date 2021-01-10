@@ -100,7 +100,7 @@ public class VisitRestControllerTests {
     	pet.setBirthDate(new Date());
     	pet.setOwner(owner);
 		pet.setType(petType);
-		
+
 		Vet vet = new Vet();
 		vet.setId(2);
 		vet.setFirstName("Helen");
@@ -184,20 +184,10 @@ public class VisitRestControllerTests {
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetVisitSearchBadRequest() throws Exception {
         given(this.clinicService.findVisitsBySearchTerm("a", false)).willReturn(visits);
-        this.mockMvc.perform(get("/api/visits/search?efesfse")
+        this.mockMvc.perform(get("/api/visits/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
     }
-
-    @Test
-    @WithMockUser(roles = "OWNER_ADMIN")
-    public void testGetVisitSearchForbidden() throws Exception {
-        // forbid searchTerm longer than 50 chars
-        this.mockMvc.perform(get("/api/visits/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
-            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isForbidden());
-    }
-
 
     @Test
     @WithMockUser(roles="OWNER_ADMIN")

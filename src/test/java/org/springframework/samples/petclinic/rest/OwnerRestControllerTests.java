@@ -197,7 +197,7 @@ public class OwnerRestControllerTests {
                 .andExpect(jsonPath("$.[1].id").value(4))
                 .andExpect(jsonPath("$.[1].firstName").value("Harold"));
         }
-            
+
 
     @Test
     @WithMockUser(roles = "OWNER_ADMIN")
@@ -215,19 +215,11 @@ public class OwnerRestControllerTests {
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetOwnersSearchBadRequest() throws Exception {
         given(this.clinicService.findOwnersBySearchTerm("a", false)).willReturn(owners);
-        this.mockMvc.perform(get("/api/owners/search?searchTerm=a")
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=ThisIsA51CharacterString000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
     }
 
-    @Test
-    @WithMockUser(roles = "OWNER_ADMIN")
-    public void testGetOwnersSearchForbidden() throws Exception {
-        // forbid searchTerm longer than 50 chars
-        this.mockMvc.perform(get("/api/owners/search?searchTerm=ThisIsA51CharacterString000000000000000000000000000&noLimit=false")
-            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isForbidden());
-    }
 
     // ! Testing the results of the query is integration / e2e testing
     // ! Leaving this here until release, just in case

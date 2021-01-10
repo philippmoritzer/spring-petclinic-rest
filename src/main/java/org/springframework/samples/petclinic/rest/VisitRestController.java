@@ -56,11 +56,11 @@ public class VisitRestController {
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getVisitSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
-		if (searchTerm == null) {
+		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
-		if (searchTerm.length() > 50) {
-			return new ResponseEntity<Collection<Visit>>(HttpStatus.FORBIDDEN);
+		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);

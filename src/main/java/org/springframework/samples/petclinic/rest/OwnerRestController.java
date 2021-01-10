@@ -54,11 +54,11 @@ public class OwnerRestController {
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Owner>> getOwnerSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
-		if (searchTerm == null) {
+		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
-		if (searchTerm.length() > 50) {
-			return new ResponseEntity<Collection<Owner>>(HttpStatus.FORBIDDEN);
+		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+			return new ResponseEntity<Collection<Owner>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Owner>>(owners, HttpStatus.OK);

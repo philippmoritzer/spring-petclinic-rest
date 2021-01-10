@@ -154,7 +154,7 @@ public class PetRestControllerTests {
         	.accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 	}
-	
+
 	@Test
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetPetSearchSuccess() throws Exception {
@@ -170,18 +170,9 @@ public class PetRestControllerTests {
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetPetSearchBadRequest() throws Exception {
         given(this.clinicService.findPetsBySearchTerm("a", false)).willReturn(pets);
-        this.mockMvc.perform(get("/api/pets/search?searchTerm=a")
+        this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
-    }
-
-    @Test
-    @WithMockUser(roles = "OWNER_ADMIN")
-    public void testGetPetSearchForbidden() throws Exception {
-        // forbid searchTerm longer than 50 chars
-        this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
-            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isForbidden());
     }
 
     @Test

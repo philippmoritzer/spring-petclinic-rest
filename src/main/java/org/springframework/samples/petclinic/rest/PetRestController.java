@@ -56,11 +56,11 @@ public class PetRestController {
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Pet>> getPetSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
-		if (searchTerm == null) {
+		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
-		if (searchTerm.length() > 50) {
-			return new ResponseEntity<Collection<Pet>>(HttpStatus.FORBIDDEN);
+		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+			return new ResponseEntity<Collection<Pet>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
@@ -86,7 +86,7 @@ public class PetRestController {
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
 
-	
+
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/pettypes", method = RequestMethod.GET, produces = "application/json")
