@@ -205,7 +205,7 @@ public class OwnerRestControllerTests {
         owners.remove(0);
         owners.remove(0);
         given(this.clinicService.findOwnersBySearchTerm("mcfarland", false)).willReturn(owners);
-        this.mockMvc.perform(get("/api/owners/search/searchTerm=mcfarland&noLimit=false").accept(MediaType.APPLICATION_JSON))
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=mcfarland&noLimit=false").accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
                 .andExpect(content().contentType("application/json"))
                 .andExpect(jsonPath("$.[0].firstName").value("Eduardo"));
@@ -215,7 +215,7 @@ public class OwnerRestControllerTests {
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetOwnersSearchBadRequest() throws Exception {
         given(this.clinicService.findOwnersBySearchTerm("a", false)).willReturn(owners);
-        this.mockMvc.perform(get("/api/owners/search/searchTerm=a")
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=a")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
     }
@@ -223,13 +223,8 @@ public class OwnerRestControllerTests {
     @Test
     @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetOwnersSearchForbidden() throws Exception {
-        // forbid & in searchTerm
-        this.mockMvc.perform(get("/api/owners/search/searchTerm=George&Betty&noLimit=false")
-            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isForbidden());
-        
-        // forbid queryString longer than 50 chars
-        this.mockMvc.perform(get("/api/owners/search/searchTerm=ThisIsA51CharacterString0000000000000&noLimit=false")
+        // forbid searchTerm longer than 50 chars
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=ThisIsA51CharacterString000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isForbidden());
     }
