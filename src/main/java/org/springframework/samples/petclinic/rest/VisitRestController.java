@@ -54,7 +54,7 @@ public class VisitRestController {
 
 	
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
-	@RequestMapping(value = "/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/plannedVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getPastVisitsByVet(@PathVariable("vetId") int vetId){
 		Collection<Visit> visits = new ArrayList<Visit>();
 		visits.addAll(this.clinicService.getPastVisitsByVet(vetId));
@@ -65,7 +65,7 @@ public class VisitRestController {
 	}
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
-	@RequestMapping(value = "/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	@RequestMapping(value = "/pastVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getPlannedVisitsByVet(@PathVariable("vetId") int vetId){
 		Collection<Visit> visits = new ArrayList<Visit>();
 		visits.addAll(this.clinicService.getPlannedVisitsByVet(vetId));

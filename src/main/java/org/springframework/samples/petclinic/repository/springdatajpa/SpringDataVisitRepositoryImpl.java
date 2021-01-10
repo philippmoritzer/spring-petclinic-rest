@@ -20,6 +20,7 @@ import java.util.Collection;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
@@ -46,47 +47,17 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
 	}
 
 	@Override
-	public Collection<Visit> getPlannedVisitsByVet(int id) throws DataAccessException {
-		Collection<Visit> visits = this.em.createQuery("SELECT * FROM visits WHERE vet_id = id AND visit_date > '2013-01-04'").getResultList();
-		return visits;
-	}
-
-	@Override
-	public Collection<Visit> getPastVisitsByVet(int id) throws DataAccessException {
-		Collection<Visit> visits = this.em.createQuery("SELECT * FROM visits WHERE vet_id = id AND visit_date <= '2013-01-04").getResultList();
-		return visits;
-	}
-
-
-	/*@Override
-	public Collection<Visit> getPlannedVisitsByVet(int id) throws DataAccessException {
-		Map<String, Object> params = new HashMap<>();
-		return this.namedParameterJdbcTemplate.query(
-				"SELECT * FROM visits WHERE vet_id = id AND visit_date > '2013-01-04'",
-				params, new JdbcVisitRowMapperExt());
-	}
-
-	@Override
-	public Collection<Visit> getPastVisitsByVet(int id) throws DataAccessException {
-		Map<String, Object> params = new HashMap<>();
-		return this.namedParameterJdbcTemplate.query(
-				"SELECT * FROM visits WHERE vet_id = id AND visit_date <= '2013-01-04",
-				params, new JdbcVisitRowMapperExt());
-	}
-
-	@Override
-    public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) {
-        TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE "
-		+ "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
-		+ "OR UPPER(visit.pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
-		+ "OR UPPER(visit.pet.owner.firstName) LIKE concat('%', UPPER(:searchTerm), '%')"
-		+ "OR UPPER(visit.pet.owner.lastName) LIKE concat('%', UPPER(:searchTerm), '%')", Visit.class);
-
-        query.setParameter("searchTerm", searchTerm);
-        if (!noLimit){
-            query.setMaxResults(5);  
-        } 
+	public Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException {
+		System.out.println(vetId);
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date <= CURRENT_DATE", Visit.class);
+		query.setParameter("vetId", vetId);
 		return query.getResultList();
-	}*/
+	}
 
+	@Override
+	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
+		query.setParameter("vetId", vetId);
+		return query.getResultList();
+	}
 }
