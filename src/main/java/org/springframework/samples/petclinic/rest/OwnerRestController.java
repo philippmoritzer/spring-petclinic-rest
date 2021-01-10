@@ -24,7 +24,6 @@ import javax.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -50,6 +49,24 @@ public class OwnerRestController {
 
 	@Autowired
 	private ClinicService clinicService;
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{queryString}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Owner>> getOwnerSearch(@PathVariable("queryString") String queryString) {
+		if (queryString == null) {
+			queryString = "";
+		}
+		if (queryString.length() > 50 || queryString.split("&").length > 2){
+			return new ResponseEntity<Collection<Owner>>(HttpStatus.FORBIDDEN);
+		}
+
+		String[] splits = queryString.split("&");
+		String searchTerm = splits[0].replace("searchTerm=", "");
+		boolean noLimit = Boolean.parseBoolean(splits[1].replace("noLimit=", "")); // will evaluate to false if string doesn't match "true" or "false"
+
+		Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Owner>>(owners, HttpStatus.OK);
+	}
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/*/lastname/{lastName}", method = RequestMethod.GET, produces = "application/json")

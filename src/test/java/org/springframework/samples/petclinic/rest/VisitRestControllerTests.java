@@ -163,6 +163,40 @@ public class VisitRestControllerTests {
             .andExpect(status().isNotFound());
     }
 
+	@Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetVisitsSearchSuccess() throws Exception {
+        given(this.clinicService.findVisitsBySearchTerm("jewel", false)).willReturn(visits);
+        this.mockMvc.perform(get("/api/visits/search/searchTerm=jewel&noLimit=false").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.[0].description").value("rabies shot"));
+    }
+
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetVisitSearchBadRequest() throws Exception {
+        given(this.clinicService.findVisitsBySearchTerm("a", false)).willReturn(visits);
+        this.mockMvc.perform(get("/api/visits/search/searchTerm=a")
+            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest());
+    }
+
+    // @Test
+    // @WithMockUser(roles = "OWNER_ADMIN")
+    // public void testGetVisitSearchForbidden() throws Exception {
+    //     // forbid & in searchTerm
+    //     this.mockMvc.perform(get("/api/visits/search/searchTerm=Rosy&Jewel&noLimit=false")
+    //         .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+    //         .andExpect(status().isForbidden());
+        
+    //     // forbid queryString longer than 50 chars
+    //     this.mockMvc.perform(get("/api/visits/search/searchTerm=ThisIsA51CharacterString0000000000000&noLimit=false")
+    //         .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+    //         .andExpect(status().isForbidden());
+    // }
+
+
     @Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testCreateVisitSuccess() throws Exception {

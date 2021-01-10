@@ -52,6 +52,24 @@ public class PetRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{queryString}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Pet>> getPetSearch(@PathVariable("queryString") String queryString) {
+		if (queryString == null) {
+			queryString = "";
+		}
+		if (queryString.length() > 50 || queryString.split("&").length > 2){
+			return new ResponseEntity<Collection<Pet>>(HttpStatus.FORBIDDEN);
+		}
+
+		String[] splits = queryString.split("&");
+		String searchTerm = splits[0].replace("searchTerm=", "");
+		boolean noLimit = Boolean.parseBoolean(splits[1].replace("noLimit=", "")); // will evaluate to false if string doesn't match "true" or "false"
+		
+		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
+	}
+
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/{petId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Pet> getPet(@PathVariable("petId") int petId){
@@ -71,6 +89,8 @@ public class PetRestController {
 		}
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
+
+	
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/pettypes", method = RequestMethod.GET, produces = "application/json")

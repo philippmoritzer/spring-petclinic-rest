@@ -44,9 +44,19 @@ public interface VisitRepository {
 
     List<Visit> findByPetId(Integer petId);
     
-	Visit findById(int id) throws DataAccessException;
-	
-	Collection<Visit> findAll() throws DataAccessException;
+    Visit findById(int id) throws DataAccessException;
+    
+    Collection<Visit> findAll() throws DataAccessException;
+    
+    /**
+     * Retrieve all visits from the data storemacthing the searchterm
+     *
+     * @param searchTerm the term to search for
+     * @param noLimit limit searchresults to a max amount
+     * @return collection of type Visit matching the searchterm
+     * @throws org.springframework.dao.DataRetrievalFailureException if not found
+     */
+    Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException;
 
 	void delete(Visit visit) throws DataAccessException;
 

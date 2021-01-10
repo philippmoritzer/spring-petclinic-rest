@@ -52,6 +52,25 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search/{queryString}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getVisitSearch(@PathVariable("queryString") String queryString) {
+		if (queryString == null) {
+			queryString = "";
+		}
+		if (queryString.length() > 50 || queryString.split("&").length > 2) {
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.FORBIDDEN);
+		}
+
+		String[] splits = queryString.split("&");
+		String searchTerm = splits[0].replace("searchTerm=", "");
+		boolean noLimit = Boolean.parseBoolean(splits[1].replace("noLimit=", "")); // will evaluate to false if string doesn't match "true" or "false"
+
+
+		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getAllVisits(){
