@@ -40,6 +40,7 @@ import org.springframework.http.MediaType;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.model.Visit;
 import org.springframework.samples.petclinic.service.clinicService.ApplicationTestConfig;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -98,21 +99,27 @@ public class VisitRestControllerTests {
     	pet.setName("Rosy");
     	pet.setBirthDate(new Date());
     	pet.setOwner(owner);
-    	pet.setType(petType);
-
+		pet.setType(petType);
+		
+		Vet vet = new Vet();
+		vet.setId(2);
+		vet.setFirstName("Helen");
+		vet.setLastName("Leary");
 
     	Visit visit = new Visit();
     	visit.setId(2);
     	visit.setPet(pet);
     	visit.setDate(new Date());
-    	visit.setDescription("rabies shot");
+		visit.setDescription("rabies shot");
+		visit.setVet(vet);
     	visits.add(visit);
 
     	visit = new Visit();
     	visit.setId(3);
     	visit.setPet(pet);
     	visit.setDate(new Date());
-    	visit.setDescription("neutered");
+		visit.setDescription("neutered");
+		visit.setVet(vet);
     	visits.add(visit);
 
 
