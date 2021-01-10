@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -53,19 +54,14 @@ public class PetRestController {
 	private ClinicService clinicService;
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
-	@RequestMapping(value = "/search/{queryString}", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<Collection<Pet>> getPetSearch(@PathVariable("queryString") String queryString) {
-		if (queryString == null) {
-			queryString = "";
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Pet>> getPetSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
+		if (searchTerm == null) {
+			searchTerm = "";
 		}
-		if (queryString.length() > 50 || queryString.split("&").length > 2){
+		if (searchTerm.length() > 50) {
 			return new ResponseEntity<Collection<Pet>>(HttpStatus.FORBIDDEN);
 		}
-
-		String[] splits = queryString.split("&");
-		String searchTerm = splits[0].replace("searchTerm=", "");
-		boolean noLimit = Boolean.parseBoolean(splits[1].replace("noLimit=", "")); // will evaluate to false if string doesn't match "true" or "false"
-		
 		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
