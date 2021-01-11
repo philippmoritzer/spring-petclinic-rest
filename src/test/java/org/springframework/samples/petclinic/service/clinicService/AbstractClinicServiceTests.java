@@ -102,6 +102,12 @@ public abstract class AbstractClinicServiceTests {
         // query language
         owners = this.clinicService.findOwnersBySearchTerm("DELETE FROM Owner owner WHERE owner.firstName LIKE 'Betty'",false);
         assertThat(owners.size()).isEqualTo(0);
+
+        // limit
+        owners = this.clinicService.findOwnersBySearchTerm("a",false);
+        assertThat(owners.size()).isEqualTo(5);
+        owners = this.clinicService.findOwnersBySearchTerm("a",true);
+        assertThat(owners.size()).isEqualTo(10);
     }
 
     @Test
@@ -162,6 +168,10 @@ public abstract class AbstractClinicServiceTests {
         //owner name
         visits = this.clinicService.findVisitsBySearchTerm("coleman", false);
         assertThat(visits.size()).isEqualTo(4);
+
+        //vet name
+        visits = this.clinicService.findVisitsBySearchTerm("carter", false);
+        assertThat(visits.size()).isEqualTo(1);
 
         visits = this.clinicService.findVisitsBySearchTerm("jean", false);
         assertThat(visits.size()).isEqualTo(4);

@@ -173,15 +173,11 @@ public class PetRestControllerTests {
         this.mockMvc.perform(get("/api/pets/search?searchTerm=a")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
-    }
 
-    @Test
-    @WithMockUser(roles = "OWNER_ADMIN")
-    public void testGetPetSearchForbidden() throws Exception {
-        // forbid searchTerm longer than 50 chars
+        // searchTerm longer than 50 chars
         this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isForbidden());
+            .andExpect(status().isBadRequest());
     }
 
     @Test

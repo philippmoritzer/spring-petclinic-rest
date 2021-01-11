@@ -60,7 +60,7 @@ public class PetRestController {
 			searchTerm = "";
 		}
 		if (searchTerm.length() > 50) {
-			return new ResponseEntity<Collection<Pet>>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<Collection<Pet>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);

@@ -183,17 +183,27 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
 	@Override
 	public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		
 		Map<String, Object> params = new HashMap<>();
 		params.put("search_term", "%" + searchTerm.toUpperCase() + "%");
-        
+		
+		String query = "SELECT description, pets.name, vets.first_name, vets.last_name, owners.first_name, owners.last_name from visits "
+		+ "INNER JOIN pets ON visits.pet_id = pets.id " 
+		+ "INNER JOIN owners ON pets.owner_id = owners.id "
+		+ "INNER JOIN vets ON visits.vet_id = vets.id WHERE " 
+		+ "UPPER(description) LIKE :search_term OR "
+		+ "UPPER(pets.name) LIKE :search_term OR "
+		+ "UPPER(vets.last_name) LIKE :search_term OR "
+		+ "UPPER(vets.first_name) LIKE :search_term OR "
+		+ "UPPER(owners.last_name) LIKE :search_term OR "
+		+ "UPPER(owners.first_name) LIKE :search_term";
+
+		if (!noLimit){
+            query += " LIMIT 5";
+        }
+
         List<Visit> visits = this.namedParameterJdbcTemplate.query(
-                "SELECT description, pets.name, first_name, last_name "
-                + "from visits INNER JOIN pets ON visits.pet_id = pets.id " 
-                + "INNER JOIN owners ON pets.owner_id = owners.id WHERE "
-                + "UPPER(description) LIKE :search_term OR "
-                + "UPPER(pets.name) LIKE :search_term OR "
-                + "UPPER(last_name) LIKE :search_term OR "
-                + "UPPER(first_name) LIKE :search_term",
+                query,
 	            params,
 				BeanPropertyRowMapper.newInstance(Visit.class));
         return visits;

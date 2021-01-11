@@ -60,7 +60,7 @@ public class VisitRestController {
 			searchTerm = "";
 		}
 		if (searchTerm.length() > 50) {
-			return new ResponseEntity<Collection<Visit>>(HttpStatus.FORBIDDEN);
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
