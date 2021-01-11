@@ -219,14 +219,11 @@ public class OwnerRestControllerTests {
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
 
-<<<<<<< HEAD
-=======
         // searchTerm longer than 50 chars
         this.mockMvc.perform(get("/api/owners/search?searchTerm=ThisIsA51CharacterString000000000000000000000000000&noLimit=false")
         .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
         .andExpect(status().isBadRequest());
     }
->>>>>>> userStory3
 
     // ! Testing the results of the query is integration / e2e testing
     // ! Leaving this here until release, just in case

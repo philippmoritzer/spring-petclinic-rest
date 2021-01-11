@@ -58,11 +58,7 @@ public class OwnerRestController {
 		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
-<<<<<<< HEAD
-		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
-=======
 		if (searchTerm.length() > 50) {
->>>>>>> userStory3
 			return new ResponseEntity<Collection<Owner>>(HttpStatus.BAD_REQUEST);
 		}
 		System.out.println(searchTerm);

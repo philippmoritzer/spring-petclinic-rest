@@ -174,15 +174,12 @@ public class PetRestControllerTests {
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
 
-<<<<<<< HEAD
-=======
         // searchTerm longer than 50 chars
         this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
             .andExpect(status().isBadRequest());
     }
 
->>>>>>> userStory3
     @Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testCreatePetSuccess() throws Exception {

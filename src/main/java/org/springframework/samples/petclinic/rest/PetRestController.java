@@ -59,11 +59,7 @@ public class PetRestController {
 		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
-<<<<<<< HEAD
-		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
-=======
 		if (searchTerm.length() > 50) {
->>>>>>> userStory3
 			return new ResponseEntity<Collection<Pet>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
