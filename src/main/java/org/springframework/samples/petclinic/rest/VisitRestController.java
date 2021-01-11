@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -74,7 +75,20 @@ public class VisitRestController {
 		}
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
 	}
-	
+  
+  
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getVisitSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
+		if (searchTerm == null || searchTerm == "") {
+			searchTerm = "";
+		}
+		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.BAD_REQUEST);
+		}
+		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")

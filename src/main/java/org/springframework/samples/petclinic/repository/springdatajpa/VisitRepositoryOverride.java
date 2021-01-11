@@ -35,4 +35,5 @@ public interface VisitRepositoryOverride {
 
 	Collection<Visit> getPastVisitsByVet(int id);
 
+	Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit);
 }

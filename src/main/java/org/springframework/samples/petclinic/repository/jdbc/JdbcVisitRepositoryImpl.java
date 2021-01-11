@@ -200,4 +200,22 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 		}
 	}
 
+	@Override
+	public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		params.put("search_term", "%" + searchTerm.toUpperCase() + "%");
+        
+        List<Visit> visits = this.namedParameterJdbcTemplate.query(
+                "SELECT description, pets.name, first_name, last_name "
+                + "from visits INNER JOIN pets ON visits.pet_id = pets.id " 
+                + "INNER JOIN owners ON pets.owner_id = owners.id WHERE "
+                + "UPPER(description) LIKE :search_term OR "
+                + "UPPER(pets.name) LIKE :search_term OR "
+                + "UPPER(last_name) LIKE :search_term OR "
+                + "UPPER(first_name) LIKE :search_term",
+	            params,
+				BeanPropertyRowMapper.newInstance(Visit.class));
+        return visits;
+	}
+
 }

@@ -192,6 +192,23 @@ public class JdbcOwnerRepositoryImpl implements OwnerRepository {
         }
         this.namedParameterJdbcTemplate.update("DELETE FROM owners WHERE id=:id", owner_params);
 	}
+    
+    @Override
+    public Collection<Owner> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+        Map<String, Object> params = new HashMap<>();
+		params.put("search_term", "%" + searchTerm.toUpperCase() + "%");
+        
+        List<Owner> owners = this.namedParameterJdbcTemplate.query(
+                "SELECT first_name, last_name, address, city, telephone FROM owners WHERE "
+                + "UPPER(first_name) LIKE :search_term OR "
+                + "UPPER(last_name) LIKE :search_term OR "
+                + "UPPER(city) LIKE :search_term OR "
+                + "UPPER(address) LIKE :search_term OR "
+                + "UPPER(telephone) LIKE :search_term",
+	            params,
+	            BeanPropertyRowMapper.newInstance(Owner.class));
+        return owners;
+    }
 
 
 }

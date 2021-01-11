@@ -34,10 +34,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.model.Pet;
 import org.springframework.samples.petclinic.model.PetType;
 import org.springframework.samples.petclinic.model.Visit;
+import org.springframework.samples.petclinic.model.Vet;
 import org.springframework.samples.petclinic.service.clinicService.ApplicationTestConfig;
 import org.springframework.samples.petclinic.service.ClinicService;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -46,9 +48,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import static org.hamcrest.Matchers.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 
 /**
  * Test class for {@link OwnerRestController}
@@ -57,7 +59,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 @SpringBootTest
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(classes=ApplicationTestConfig.class)
+@ContextConfiguration(classes = ApplicationTestConfig.class)
 @WebAppConfiguration
 public class OwnerRestControllerTests {
 
@@ -72,48 +74,65 @@ public class OwnerRestControllerTests {
     private List<Owner> owners;
 
     @Before
-    public void initOwners(){
-    	this.mockMvc = MockMvcBuilders.standaloneSetup(ownerRestController)
-    			.setControllerAdvice(new ExceptionControllerAdvice())
-    			.build();
-    	owners = new ArrayList<Owner>();
+    public void initOwners() {
+        this.mockMvc = MockMvcBuilders.standaloneSetup(ownerRestController)
+                .setControllerAdvice(new ExceptionControllerAdvice()).build();
+        owners = new ArrayList<Owner>();
 
-    	Owner ownerWithPet = new Owner();
-    	ownerWithPet.setId(1);
-    	ownerWithPet.setFirstName("George");
-    	ownerWithPet.setLastName("Franklin");
-    	ownerWithPet.setAddress("110 W. Liberty St.");
-    	ownerWithPet.setCity("Madison");
-    	ownerWithPet.setTelephone("6085551023");
-    	ownerWithPet.addPet(getTestPetWithIdAndName(ownerWithPet, 1, "Rosy"));
-    	owners.add(ownerWithPet);
+        Owner ownerWithPet = new Owner();
+        ownerWithPet.setId(1);
+        ownerWithPet.setFirstName("George");
+        ownerWithPet.setLastName("Franklin");
+        ownerWithPet.setAddress("110 W. Liberty St.");
+        ownerWithPet.setCity("Madison");
+        ownerWithPet.setTelephone("6085551023");
+        ownerWithPet.addPet(getTestPetWithIdAndName(ownerWithPet, 1, "Rosy"));
+        owners.add(ownerWithPet);
 
         Owner owner = new Owner();
-    	owner.setId(2);
-    	owner.setFirstName("Betty");
-    	owner.setLastName("Davis");
-    	owner.setAddress("638 Cardinal Ave.");
-    	owner.setCity("Sun Prairie");
-    	owner.setTelephone("6085551749");
-    	owners.add(owner);
+        owner.setId(2);
+        owner.setFirstName("Betty");
+        owner.setLastName("Davis");
+        owner.setAddress("638 Cardinal Ave.");
+        owner.setCity("Sun Prairie");
+        owner.setTelephone("6085551749");
+        owners.add(owner);
 
-    	owner = new Owner();
-    	owner.setId(3);
-    	owner.setFirstName("Eduardo");
-    	owner.setLastName("Rodriquez");
-    	owner.setAddress("2693 Commerce St.");
-    	owner.setCity("McFarland");
-    	owner.setTelephone("6085558763");
-    	owners.add(owner);
+        owner = new Owner();
+        owner.setId(3);
+        owner.setFirstName("Eduardo");
+        owner.setLastName("Rodriquez");
+        owner.setAddress("2693 Commerce St.");
+        owner.setCity("McFarland");
+        owner.setTelephone("6085558763");
+        owners.add(owner);
 
-    	owner = new Owner();
-    	owner.setId(4);
-    	owner.setFirstName("Harold");
-    	owner.setLastName("Davis");
-    	owner.setAddress("563 Friendly St.");
-    	owner.setCity("Windsor");
-    	owner.setTelephone("6085553198");
-    	owners.add(owner);
+        owner = new Owner();
+        owner.setId(4);
+        owner.setFirstName("Harold");
+        owner.setLastName("Davis");
+        owner.setAddress("563 Friendly St.");
+        owner.setCity("Windsor");
+        owner.setTelephone("6085553198");
+        owners.add(owner);
+
+        owner = new Owner();
+        owner.setId(5);
+        owner.setFirstName("Peter");
+        owner.setLastName("Jackson");
+        owner.setAddress("563 Friendly St.");
+        owner.setCity("Windsor");
+        owner.setTelephone("6085553198");
+        owners.add(owner);
+
+        owner = new Owner();
+        owner.setId(6);
+        owner.setFirstName("Lisa");
+        owner.setLastName("Simpson");
+        owner.setAddress("333 Friendly St.");
+        owner.setCity("Windsorina");
+        owner.setTelephone("6086663198");
+        owners.add(owner);
     }
 
     private Pet getTestPetWithIdAndName(final Owner owner, final int id, final String name) {
@@ -136,45 +155,89 @@ public class OwnerRestControllerTests {
         visit.setPet(pet);
         visit.setDate(new Date());
         visit.setDescription("test" + id);
+        visit.setVet(getTestVetForVisit());
         return visit;
     }
 
+    private Vet getTestVetForVisit(){
+        Vet vet = new Vet();
+            vet.setId(2);
+            vet.setFirstName("Helen");
+            vet.setLastName("Leary");
+         return vet;
+    }
+
     @Test
-    @WithMockUser(roles="OWNER_ADMIN")
+    @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetOwnerSuccess() throws Exception {
-    	given(this.clinicService.findOwnerById(1)).willReturn(owners.get(0));
-        this.mockMvc.perform(get("/api/owners/1")
-        	.accept(MediaType.APPLICATION_JSON_VALUE))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.id").value(1))
-            .andExpect(jsonPath("$.firstName").value("George"));
+        given(this.clinicService.findOwnerById(1)).willReturn(owners.get(0));
+        this.mockMvc.perform(get("/api/owners/1").accept(MediaType.APPLICATION_JSON_VALUE)).andExpect(status().isOk())
+                .andExpect(content().contentType("application/json")).andExpect(jsonPath("$.id").value(1))
+                .andExpect(jsonPath("$.firstName").value("George"));
     }
 
     @Test
-    @WithMockUser(roles="OWNER_ADMIN")
+    @WithMockUser(roles = "OWNER_ADMIN")
     public void testGetOwnerNotFound() throws Exception {
-    	given(this.clinicService.findOwnerById(-1)).willReturn(null);
-        this.mockMvc.perform(get("/api/owners/-1")
-        	.accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isNotFound());
+        given(this.clinicService.findOwnerById(-1)).willReturn(null);
+        this.mockMvc.perform(get("/api/owners/-1").accept(MediaType.APPLICATION_JSON)).andExpect(status().isNotFound());
+    }
+
+
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetOwnersListSuccess() throws Exception {
+        owners.remove(0);
+        owners.remove(1);
+        given(this.clinicService.findOwnerByLastName("Davis")).willReturn(owners);
+        this.mockMvc.perform(get("/api/owners/*/lastname/Davis").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.[0].id").value(2))
+                .andExpect(jsonPath("$.[0].firstName").value("Betty"))
+                .andExpect(jsonPath("$.[1].id").value(4))
+                .andExpect(jsonPath("$.[1].firstName").value("Harold"));
+        }
+
+
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetOwnersSearchSuccess() throws Exception {
+        owners.remove(0);
+        owners.remove(0);
+        given(this.clinicService.findOwnersBySearchTerm("mcfarland", false)).willReturn(owners);
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=mcfarland&noLimit=false").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.[0].firstName").value("Eduardo"));
     }
 
     @Test
-    @WithMockUser(roles="OWNER_ADMIN")
-    public void testGetOwnersListSuccess() throws Exception {
-    	owners.remove(0);
-    	owners.remove(1);
-    	given(this.clinicService.findOwnerByLastName("Davis")).willReturn(owners);
-        this.mockMvc.perform(get("/api/owners/*/lastname/Davis")
-        	.accept(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(content().contentType("application/json"))
-            .andExpect(jsonPath("$.[0].id").value(2))
-            .andExpect(jsonPath("$.[0].firstName").value("Betty"))
-            .andExpect(jsonPath("$.[1].id").value(4))
-            .andExpect(jsonPath("$.[1].firstName").value("Harold"));
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetOwnersSearchBadRequest() throws Exception {
+        given(this.clinicService.findOwnersBySearchTerm("a", false)).willReturn(owners);
+        this.mockMvc.perform(get("/api/owners/search?searchTerm=ThisIsA51CharacterString000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
+            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest());
     }
+
+
+    // ! Testing the results of the query is integration / e2e testing
+    // ! Leaving this here until release, just in case
+    // TODO: Delete this
+    // @Test
+    // @WithMockUser(roles = "OWNER_ADMIN")
+    // public void testGetOwnersSearchLimit() throws Exception {
+    //     given(this.clinicService.findOwnersBySearchTerm("a", false)).willReturn(owners);
+    //     this.mockMvc.perform(get("/api/owners/search/searchTerm=a&noLimit=false")
+    //         .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+    //         .andExpect(status().isOk())
+    //         .andExpect(jsonPath("$", hasSize(5)));
+
+    //     this.mockMvc.perform(get("/api/owners/search/searchTerm=a&noLimit=true")
+    //         .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+    //         .andExpect(status().isOk())
+    //         .andExpect(jsonPath("$", hasSize(6)));
+    // }
 
     @Test
     @WithMockUser(roles="OWNER_ADMIN")

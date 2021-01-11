@@ -94,6 +94,20 @@ public class JpaVisitRepositoryImpl implements VisitRepository {
 	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
 		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
 		query.setParameter("vetId", vetId);
+  }
+    
+    @Override
+    public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) {
+        TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE "
+		+ "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
+		+ "OR UPPER(visit.pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(visit.pet.owner.firstName) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(visit.pet.owner.lastName) LIKE concat('%', UPPER(:searchTerm), '%')", Visit.class);
+
+        query.setParameter("searchTerm", searchTerm);
+        if (!noLimit){
+            query.setMaxResults(5);  
+        }
 		return query.getResultList();
 	}
 
