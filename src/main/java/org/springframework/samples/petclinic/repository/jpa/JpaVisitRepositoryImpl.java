@@ -93,7 +93,8 @@ public class JpaVisitRepositoryImpl implements VisitRepository {
 	@Override
 	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
 		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
-		query.setParameter("vetId", vetId);
+        query.setParameter("vetId", vetId);
+        return query.getResultList();
   }
     
     @Override

@@ -48,9 +48,9 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
 
 	@Override
 	public Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException {
-		System.out.println(vetId);
 		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date <= CURRENT_DATE", Visit.class);
 		query.setParameter("vetId", vetId);
+		return query.getResultList();
   }
 
   @Override
