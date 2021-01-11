@@ -83,7 +83,11 @@ public class VisitRestController {
 		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
+<<<<<<< HEAD
 		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+=======
+		if (searchTerm.length() > 50) {
+>>>>>>> userStory3
 			return new ResponseEntity<Collection<Visit>>(HttpStatus.BAD_REQUEST);
 		}
 		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);

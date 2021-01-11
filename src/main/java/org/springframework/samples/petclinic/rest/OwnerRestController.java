@@ -21,6 +21,7 @@ import java.util.Collection;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.hibernate.annotations.SourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -57,9 +58,14 @@ public class OwnerRestController {
 		if (searchTerm == null || searchTerm == "") {
 			searchTerm = "";
 		}
+<<<<<<< HEAD
 		else if (searchTerm.length() > 50 || searchTerm.length() < 2) {
+=======
+		if (searchTerm.length() > 50) {
+>>>>>>> userStory3
 			return new ResponseEntity<Collection<Owner>>(HttpStatus.BAD_REQUEST);
 		}
+		System.out.println(searchTerm);
 		Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm(searchTerm, noLimit);
 		return new ResponseEntity<Collection<Owner>>(owners, HttpStatus.OK);
 	}

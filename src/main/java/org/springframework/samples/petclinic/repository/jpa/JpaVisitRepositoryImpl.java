@@ -101,7 +101,9 @@ public class JpaVisitRepositoryImpl implements VisitRepository {
     public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) {
         TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE "
 		+ "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
-		+ "OR UPPER(visit.pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+        + "OR UPPER(visit.pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+        + "OR UPPER(visit.vet.lastName) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(visit.vet.firstName) LIKE concat('%', UPPER(:searchTerm), '%')"
 		+ "OR UPPER(visit.pet.owner.firstName) LIKE concat('%', UPPER(:searchTerm), '%')"
 		+ "OR UPPER(visit.pet.owner.lastName) LIKE concat('%', UPPER(:searchTerm), '%')", Visit.class);
 

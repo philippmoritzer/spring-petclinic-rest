@@ -186,6 +186,14 @@ public class VisitRestControllerTests {
         given(this.clinicService.findVisitsBySearchTerm("a", false)).willReturn(visits);
         this.mockMvc.perform(get("/api/visits/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
             .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+<<<<<<< HEAD
+=======
+			.andExpect(status().isBadRequest());
+			
+		// searchTerm longer than 50 chars
+        this.mockMvc.perform(get("/api/visits/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
+            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+>>>>>>> userStory3
             .andExpect(status().isBadRequest());
     }
 
