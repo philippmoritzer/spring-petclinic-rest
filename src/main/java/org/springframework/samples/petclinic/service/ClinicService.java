@@ -40,6 +40,9 @@ public interface ClinicService {
 	void deletePet(Pet pet) throws DataAccessException;
 	Collection<Pet> findPetsBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException;
 
+
+	Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException;
+    Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException;
 	Collection<Visit> findVisitsByPetId(int petId);
 	Visit findVisitById(int visitId) throws DataAccessException;
 	Collection<Visit> findAllVisits() throws DataAccessException;

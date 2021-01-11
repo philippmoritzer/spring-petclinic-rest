@@ -47,6 +47,13 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
 	}
 
 	@Override
+	public Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException {
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date <= CURRENT_DATE", Visit.class);
+		query.setParameter("vetId", vetId);
+		return query.getResultList();
+  }
+
+  @Override
     public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) {
         TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE "
 		+ "UPPER(visit.description) LIKE concat('%', UPPER(:searchTerm),'%')"
@@ -57,8 +64,14 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
         query.setParameter("searchTerm", searchTerm);
         if (!noLimit){
             query.setMaxResults(5);  
-        } 
+        }
 		return query.getResultList();
 	}
 
+	@Override
+	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
+		query.setParameter("vetId", vetId);
+		return query.getResultList();
+	}
 }
