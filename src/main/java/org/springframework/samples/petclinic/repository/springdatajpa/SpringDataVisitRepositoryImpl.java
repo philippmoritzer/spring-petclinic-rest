@@ -33,7 +33,7 @@ import org.springframework.samples.petclinic.model.Visit;
 
 @Profile("spring-data-jpa")
 public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
-	
+
 	@PersistenceContext
     private EntityManager em;
 
@@ -48,7 +48,7 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
 
 	@Override
 	public Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException {
-		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date <= CURRENT_DATE", Visit.class);
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
 		query.setParameter("vetId", vetId);
 		return query.getResultList();
   }
@@ -65,14 +65,14 @@ public class SpringDataVisitRepositoryImpl implements VisitRepositoryOverride {
 
         query.setParameter("searchTerm", searchTerm);
         if (!noLimit){
-            query.setMaxResults(5);  
+            query.setMaxResults(5);
         }
 		return query.getResultList();
 	}
 
 	@Override
 	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
-		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date > CURRENT_DATE", Visit.class);
+		TypedQuery<Visit> query = this.em.createQuery("SELECT visit FROM Visit visit WHERE visit.vet.id LIKE :vetId AND visit.date <= CURRENT_DATE", Visit.class);
 		query.setParameter("vetId", vetId);
 		return query.getResultList();
 	}

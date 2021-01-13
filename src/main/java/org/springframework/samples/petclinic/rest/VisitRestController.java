@@ -53,9 +53,20 @@ public class VisitRestController {
 	@Autowired
 	private ClinicService clinicService;
 
-	
+
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/plannedVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getPlannedVisitsByVet(@PathVariable("vetId") int vetId){
+		Collection<Visit> visits = new ArrayList<Visit>();
+		visits.addAll(this.clinicService.getPlannedVisitsByVet(vetId));
+		if (visits.isEmpty()){
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/pastVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getPastVisitsByVet(@PathVariable("vetId") int vetId){
 		Collection<Visit> visits = new ArrayList<Visit>();
 		visits.addAll(this.clinicService.getPastVisitsByVet(vetId));
@@ -65,18 +76,7 @@ public class VisitRestController {
 		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
 	}
 
-	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
-	@RequestMapping(value = "/pastVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
-	public ResponseEntity<Collection<Visit>> getPlannedVisitsByVet(@PathVariable("vetId") int vetId){
-		Collection<Visit> visits = new ArrayList<Visit>();
-		visits.addAll(this.clinicService.getPlannedVisitsByVet(vetId));
-		if (visits.isEmpty()){
-			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
-		}
-		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
-	}
-  
-  
+
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
 	public ResponseEntity<Collection<Visit>> getVisitSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
