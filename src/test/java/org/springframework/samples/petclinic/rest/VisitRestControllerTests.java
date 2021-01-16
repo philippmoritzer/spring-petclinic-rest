@@ -123,6 +123,38 @@ public class VisitRestControllerTests {
     	visits.add(visit);
 
 
+	}
+
+	@Test
+    @WithMockUser(roles="OWNER_ADMIN")
+    public void testGetPlannedVisitsByVet() throws Exception {
+    	given(this.clinicService.getPlannedVisitsByVet(2)).willReturn(visits);
+		this.mockMvc.perform(get("/api/plannedVisits/2")
+			.accept(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("application/json"))
+			.andExpect(jsonPath("$.[0].id").value(2))
+			.andExpect(jsonPath("$.[0].description").value("rabies shot"))
+        	.andExpect(jsonPath("$.[1].id").value(3))
+        	.andExpect(jsonPath("$.[1].description").value("neutered"));
+    }
+	
+	@Test
+    @WithMockUser(roles="OWNER_ADMIN")
+    public void testGetPlannedVisitsByVetNotFound() throws Exception {
+    	given(this.clinicService.getPlannedVisitsByVet(-1)).willReturn(null);
+        this.mockMvc.perform(get("/api/plannedVisits/-1")
+        	.accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
+	}
+	
+	@Test
+    @WithMockUser(roles="OWNER_ADMIN")
+    public void testGetPastVisitsByVetNotFound() throws Exception {
+    	given(this.clinicService.getPastVisitsByVet(-1)).willReturn(null);
+        this.mockMvc.perform(get("/api/plannedVisits/-1")
+        	.accept(MediaType.APPLICATION_JSON))
+            .andExpect(status().isNotFound());
     }
 
     @Test
