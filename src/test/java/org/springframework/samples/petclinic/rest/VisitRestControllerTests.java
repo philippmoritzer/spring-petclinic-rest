@@ -26,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -52,6 +53,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mysql.cj.xdevapi.Collection;
 
 /**
  * Test class for {@link VisitRestController}
@@ -72,7 +74,11 @@ public class VisitRestControllerTests {
 
     private MockMvc mockMvc;
 
-    private List<Visit> visits;
+	private List<Visit> visits;
+	
+	private List<Visit> oldVisits;
+
+	private List<Visit> plannedVisits;
 
     @Before
     public void initVisits(){
@@ -120,7 +126,69 @@ public class VisitRestControllerTests {
     	visit.setDate(new Date());
 		visit.setDescription("neutered");
 		visit.setVet(vet);
-    	visits.add(visit);
+		visits.add(visit);
+
+		oldVisits = new ArrayList<Visit>();
+		
+		Visit oldVisit = new Visit();
+    	oldVisit.setId(2);
+		oldVisit.setPet(pet);
+		try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Date   date       = format.parse ( "2013-12-31" );
+			oldVisit.setDate(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+		}
+		oldVisit.setDescription("rabies shot");
+		oldVisit.setVet(vet);
+    	oldVisits.add(oldVisit);
+
+    	oldVisit = new Visit();
+    	oldVisit.setId(3);
+    	oldVisit.setPet(pet);
+    	try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Date   date       = format.parse ( "2014-12-31" );
+			System.out.println(date);
+			oldVisit.setDate(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+		}
+		oldVisit.setDescription("neutered");
+		oldVisit.setVet(vet);
+		oldVisits.add(oldVisit);
+		
+		plannedVisits = new ArrayList<Visit>();
+		
+		Visit plannedVisit = new Visit();
+    	plannedVisit.setId(2);
+    	plannedVisit.setPet(pet);
+    	try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Date   date       = format.parse ( "2030-01-15" );
+			System.out.println(date);
+			oldVisit.setDate(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+		}
+		plannedVisit.setDescription("rabies shot");
+		plannedVisit.setVet(vet);
+    	plannedVisits.add(plannedVisit);
+
+    	plannedVisit = new Visit();
+    	plannedVisit.setId(3);
+    	plannedVisit.setPet(pet);
+    	try {
+            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+			Date   date       = format.parse ( "2030-01-31" );
+			oldVisit.setDate(date);
+        } catch (java.text.ParseException e) {
+            e.printStackTrace();
+		}
+		plannedVisit.setDescription("neutered");
+		plannedVisit.setVet(vet);
+    	plannedVisits.add(plannedVisit);
 
 
 	}
@@ -129,21 +197,40 @@ public class VisitRestControllerTests {
     @WithMockUser(roles="OWNER_ADMIN")
     public void testGetPlannedVisitsByVet() throws Exception {
     	given(this.clinicService.getPlannedVisitsByVet(2)).willReturn(visits);
-		this.mockMvc.perform(get("/api/plannedVisits/2")
+		this.mockMvc.perform(get("/api/visits/plannedVisits/2")
 			.accept(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType("application/json"))
 			.andExpect(jsonPath("$.[0].id").value(2))
 			.andExpect(jsonPath("$.[0].description").value("rabies shot"))
+			//.andExpect(jsonPath("$.[0].date").value("2030-01-15"))
         	.andExpect(jsonPath("$.[1].id").value(3))
-        	.andExpect(jsonPath("$.[1].description").value("neutered"));
+			.andExpect(jsonPath("$.[1].description").value("neutered"));
+			//.andExpect(jsonPath("$.[1].date").value("2030-01-31"));
+	}
+	
+	@Test
+    @WithMockUser(roles="OWNER_ADMIN")
+    public void testGetPastVisitsByVet() throws Exception {
+    	given(this.clinicService.getPastVisitsByVet(2)).willReturn(visits);
+		this.mockMvc.perform(get("/api/visits/pastVisits/2")
+			.accept(MediaType.APPLICATION_JSON_VALUE))
+			.andExpect(status().isOk())
+			.andExpect(content().contentType("application/json"))
+			.andExpect(jsonPath("$.[0].id").value(2))
+			.andExpect(jsonPath("$.[0].description").value("rabies shot"))
+			//.andExpect(jsonPath("$.[0].date").value("2030-01-15"))
+        	.andExpect(jsonPath("$.[1].id").value(3))
+			.andExpect(jsonPath("$.[1].description").value("neutered"));
+			//.andExpect(jsonPath("$.[1].date").value("2030-01-31"));
     }
 	
 	@Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testGetPlannedVisitsByVetNotFound() throws Exception {
-    	given(this.clinicService.getPlannedVisitsByVet(-1)).willReturn(null);
-        this.mockMvc.perform(get("/api/plannedVisits/-1")
+		visits.clear();
+    	given(this.clinicService.getPlannedVisitsByVet(-1)).willReturn(visits);
+        this.mockMvc.perform(get("/api/visits/plannedVisits/-1")
         	.accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
 	}
@@ -151,8 +238,9 @@ public class VisitRestControllerTests {
 	@Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testGetPastVisitsByVetNotFound() throws Exception {
-    	given(this.clinicService.getPastVisitsByVet(-1)).willReturn(null);
-        this.mockMvc.perform(get("/api/plannedVisits/-1")
+		visits.clear();
+    	given(this.clinicService.getPastVisitsByVet(-1)).willReturn(visits);
+        this.mockMvc.perform(get("/api/visits/pastVisits/-1")
         	.accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
     }
