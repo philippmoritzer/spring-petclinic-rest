@@ -168,7 +168,7 @@ public class VisitRestControllerTests {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			Date   date       = format.parse ( "2030-01-15" );
 			System.out.println(date);
-			oldVisit.setDate(date);
+			plannedVisit.setDate(date);
         } catch (java.text.ParseException e) {
             e.printStackTrace();
 		}
@@ -182,7 +182,7 @@ public class VisitRestControllerTests {
     	try {
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
 			Date   date       = format.parse ( "2030-01-31" );
-			oldVisit.setDate(date);
+			plannedVisit.setDate(date);
         } catch (java.text.ParseException e) {
             e.printStackTrace();
 		}
@@ -196,33 +196,33 @@ public class VisitRestControllerTests {
 	@Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testGetPlannedVisitsByVet() throws Exception {
-    	given(this.clinicService.getPlannedVisitsByVet(2)).willReturn(visits);
+    	given(this.clinicService.getPlannedVisitsByVet(2)).willReturn(plannedVisits);
 		this.mockMvc.perform(get("/api/visits/plannedVisits/2")
 			.accept(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType("application/json"))
 			.andExpect(jsonPath("$.[0].id").value(2))
 			.andExpect(jsonPath("$.[0].description").value("rabies shot"))
-			//.andExpect(jsonPath("$.[0].date").value("2030-01-15"))
+			.andExpect(jsonPath("$.[0].date").value("2030/01/15"))
         	.andExpect(jsonPath("$.[1].id").value(3))
-			.andExpect(jsonPath("$.[1].description").value("neutered"));
-			//.andExpect(jsonPath("$.[1].date").value("2030-01-31"));
+			.andExpect(jsonPath("$.[1].description").value("neutered"))
+			.andExpect(jsonPath("$.[1].date").value("2030/01/31"));
 	}
 	
 	@Test
     @WithMockUser(roles="OWNER_ADMIN")
     public void testGetPastVisitsByVet() throws Exception {
-    	given(this.clinicService.getPastVisitsByVet(2)).willReturn(visits);
+    	given(this.clinicService.getPastVisitsByVet(2)).willReturn(oldVisits);
 		this.mockMvc.perform(get("/api/visits/pastVisits/2")
 			.accept(MediaType.APPLICATION_JSON_VALUE))
 			.andExpect(status().isOk())
 			.andExpect(content().contentType("application/json"))
 			.andExpect(jsonPath("$.[0].id").value(2))
 			.andExpect(jsonPath("$.[0].description").value("rabies shot"))
-			//.andExpect(jsonPath("$.[0].date").value("2030-01-15"))
+			.andExpect(jsonPath("$.[0].date").value("2013/12/31"))
         	.andExpect(jsonPath("$.[1].id").value(3))
-			.andExpect(jsonPath("$.[1].description").value("neutered"));
-			//.andExpect(jsonPath("$.[1].date").value("2030-01-31"));
+			.andExpect(jsonPath("$.[1].description").value("neutered"))
+			.andExpect(jsonPath("$.[1].date").value("2014/12/31"));
     }
 	
 	@Test
