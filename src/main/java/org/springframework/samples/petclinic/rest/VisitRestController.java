@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -51,6 +52,43 @@ public class VisitRestController {
 
 	@Autowired
 	private ClinicService clinicService;
+
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/plannedVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getPlannedVisitsByVet(@PathVariable("vetId") int vetId){
+		Collection<Visit> visits = new ArrayList<Visit>();
+		visits.addAll(this.clinicService.getPlannedVisitsByVet(vetId));
+		if (visits.isEmpty()){
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/pastVisits/{vetId}", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getPastVisitsByVet(@PathVariable("vetId") int vetId){
+		Collection<Visit> visits = new ArrayList<Visit>();
+		visits.addAll(this.clinicService.getPastVisitsByVet(vetId));
+		if (visits.isEmpty()){
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.NOT_FOUND);
+		}
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
+
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Visit>> getVisitSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
+		if (searchTerm == null || searchTerm == "") {
+			searchTerm = "";
+		}
+		if (searchTerm.length() > 50) {
+			return new ResponseEntity<Collection<Visit>>(HttpStatus.BAD_REQUEST);
+		}
+		Collection<Visit> visits = this.clinicService.findVisitsBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Visit>>(visits, HttpStatus.OK);
+	}
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json")
@@ -105,6 +143,7 @@ public class VisitRestController {
 		currentVisit.setDate(visit.getDate());
 		currentVisit.setDescription(visit.getDescription());
 		currentVisit.setPet(visit.getPet());
+		currentVisit.setVet(visit.getVet());
 		this.clinicService.saveVisit(currentVisit);
 		return new ResponseEntity<Visit>(currentVisit, HttpStatus.NO_CONTENT);
 	}

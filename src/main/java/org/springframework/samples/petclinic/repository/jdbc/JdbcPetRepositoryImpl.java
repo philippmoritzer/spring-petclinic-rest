@@ -166,4 +166,28 @@ public class JdbcPetRepositoryImpl implements PetRepository {
 		this.namedParameterJdbcTemplate.update("DELETE FROM pets WHERE id=:id", pet_params);
 	}
 
+    @Override
+    public Collection<Pet> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+        Map<String, Object> params = new HashMap<>();
+		params.put("search_term", "%" + searchTerm.toUpperCase() + "%");
+        
+        String query = "SELECT name, types.name, first_name, last_name "
+        + "from pets INNER JOIN owners ON pets.owner_id = owners.id " 
+        + "INNER JOIN types ON pets.type_id = types.id WHERE "
+        + "UPPER(name) LIKE :search_term OR "
+        + "UPPER(types.name) LIKE :search_term OR "
+        + "UPPER(last_name) LIKE :search_term OR "
+        + "UPPER(first_name) LIKE :search_term";
+
+		if (!noLimit){
+            query += " LIMIT 5";
+        }
+
+        List<Pet> pets = this.namedParameterJdbcTemplate.query(
+                query,
+	            params,
+                BeanPropertyRowMapper.newInstance(Pet.class));
+        return pets;
+    }
+
 }

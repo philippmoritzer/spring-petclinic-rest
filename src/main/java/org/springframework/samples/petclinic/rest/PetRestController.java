@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -51,6 +52,19 @@ public class PetRestController {
 
 	@Autowired
 	private ClinicService clinicService;
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Pet>> getPetSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
+		if (searchTerm == null || searchTerm == "") {
+			searchTerm = "";
+		}
+		if (searchTerm.length() > 50) {
+			return new ResponseEntity<Collection<Pet>>(HttpStatus.BAD_REQUEST);
+		}
+		Collection<Pet> pets = this.clinicService.findPetsBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
+	}
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/{petId}", method = RequestMethod.GET, produces = "application/json")
@@ -71,6 +85,8 @@ public class PetRestController {
 		}
 		return new ResponseEntity<Collection<Pet>>(pets, HttpStatus.OK);
 	}
+
+
 
     @PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/pettypes", method = RequestMethod.GET, produces = "application/json")

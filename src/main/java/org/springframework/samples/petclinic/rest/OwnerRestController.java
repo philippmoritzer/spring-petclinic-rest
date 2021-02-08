@@ -21,10 +21,10 @@ import java.util.Collection;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
+import org.hibernate.annotations.SourceType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.samples.petclinic.model.Owner;
 import org.springframework.samples.petclinic.service.ClinicService;
@@ -35,6 +35,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -50,6 +51,20 @@ public class OwnerRestController {
 
 	@Autowired
 	private ClinicService clinicService;
+
+	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
+	@RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json")
+	public ResponseEntity<Collection<Owner>> getOwnerSearch(@RequestParam("searchTerm") String searchTerm, @RequestParam boolean noLimit) {
+		if (searchTerm == null || searchTerm == "") {
+			searchTerm = "";
+		}
+		if (searchTerm.length() > 50) {
+			return new ResponseEntity<Collection<Owner>>(HttpStatus.BAD_REQUEST);
+		}
+		System.out.println(searchTerm);
+		Collection<Owner> owners = this.clinicService.findOwnersBySearchTerm(searchTerm, noLimit);
+		return new ResponseEntity<Collection<Owner>>(owners, HttpStatus.OK);
+	}
 
 	@PreAuthorize( "hasRole(@roles.OWNER_ADMIN)" )
 	@RequestMapping(value = "/*/lastname/{lastName}", method = RequestMethod.GET, produces = "application/json")
