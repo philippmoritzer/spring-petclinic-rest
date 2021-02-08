@@ -78,6 +78,7 @@ CREATE TABLE IF NOT EXISTS visits (
   visit_date DATE,
   description VARCHAR(255),
   FOREIGN KEY (pet_id) REFERENCES pets(id),
+  FOREIGN KEY (vet_id) REFERENCES vets(id),
   CONSTRAINT pk_visits PRIMARY KEY (id)
 );
 

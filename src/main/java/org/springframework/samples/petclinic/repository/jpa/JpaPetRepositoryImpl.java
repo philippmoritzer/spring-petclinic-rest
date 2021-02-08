@@ -20,6 +20,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataAccessException;
@@ -80,5 +81,20 @@ public class JpaPetRepositoryImpl implements PetRepository {
 			em.remove(pet);
 		}
 	}
+
+    @Override
+    public Collection<Pet> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+        TypedQuery<Pet> query = this.em.createQuery("SELECT pet FROM Pet pet WHERE "
+		+ "UPPER(pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(pet.type.name) LIKE concat('%',UPPER(:searchTerm),'%')"
+		+ "OR UPPER(pet.owner.firstName) LIKE concat('%',UPPER(:searchTerm),'%')"
+		+ "OR UPPER(pet.owner.lastName) LIKE concat('%',UPPER(:searchTerm),'%')", Pet.class);
+		
+        query.setParameter("searchTerm", searchTerm);
+        if (!noLimit){
+			query.setMaxResults(5);  
+		}
+		return query.getResultList();
+    }
 
 }

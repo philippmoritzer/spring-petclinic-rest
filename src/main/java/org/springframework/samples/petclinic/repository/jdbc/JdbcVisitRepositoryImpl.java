@@ -35,6 +35,8 @@ import javax.sql.DataSource;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -67,7 +69,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 
         this.insertVisit = new SimpleJdbcInsert(dataSource)
             .withTableName("visits")
-            .usingGeneratedKeyColumns("id");
+			.usingGeneratedKeyColumns("id");
     }
 
 
@@ -79,7 +81,8 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
             .addValue("id", visit.getId())
             .addValue("visit_date", visit.getDate())
             .addValue("description", visit.getDescription())
-            .addValue("pet_id", visit.getPet().getId());
+            .addValue("pet_id", visit.getPet().getId())
+            .addValue("vet_id", visit.getVet().getId());
     }
 
     @Override
@@ -100,8 +103,25 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
         }
 
         return visits;
-    }
-    
+	}
+
+	@Override
+	public Collection<Visit> getPlannedVisitsByVet(int vetId) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM visits WHERE vet_id = vetId AND visit_date <= CURRENT_DATE",
+				params, new JdbcVisitRowMapperExt());
+	}
+
+	@Override
+	public Collection<Visit> getPastVisitsByVet(int vetId) throws DataAccessException {
+		Map<String, Object> params = new HashMap<>();
+		return this.namedParameterJdbcTemplate.query(
+				"SELECT * FROM visits WHERE vet_id = vetId AND visit_date > CURRENT_DATE",
+				params, new JdbcVisitRowMapperExt());
+	}
+
+
 	@Override
 	public Visit findById(int id) throws DataAccessException {
 		Visit visit;
@@ -133,7 +153,7 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 			visit.setId(newKey.intValue());
 		} else {
 			this.namedParameterJdbcTemplate.update(
-					"UPDATE visits SET visit_date=:visit_date, description=:description, pet_id=:pet_id WHERE id=:id ",
+					"UPDATE visits SET visit_date=:visit_date, description=:description, pet_id=:pet_id, vet_id=:vet_id WHERE id=:id ",
 					createVisitParameterSource(visit));
 		}
 	}
@@ -178,6 +198,34 @@ public class JdbcVisitRepositoryImpl implements VisitRepository {
 			visit.setPet(pet);
 			return visit;
 		}
+	}
+
+	@Override
+	public Collection<Visit> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException {
+		
+		Map<String, Object> params = new HashMap<>();
+		params.put("search_term", "%" + searchTerm.toUpperCase() + "%");
+		
+		String query = "SELECT description, pets.name, vets.first_name, vets.last_name, owners.first_name, owners.last_name from visits "
+		+ "INNER JOIN pets ON visits.pet_id = pets.id " 
+		+ "INNER JOIN owners ON pets.owner_id = owners.id "
+		+ "INNER JOIN vets ON visits.vet_id = vets.id WHERE " 
+		+ "UPPER(description) LIKE :search_term OR "
+		+ "UPPER(pets.name) LIKE :search_term OR "
+		+ "UPPER(vets.last_name) LIKE :search_term OR "
+		+ "UPPER(vets.first_name) LIKE :search_term OR "
+		+ "UPPER(owners.last_name) LIKE :search_term OR "
+		+ "UPPER(owners.first_name) LIKE :search_term";
+
+		if (!noLimit){
+            query += " LIMIT 5";
+        }
+
+        List<Visit> visits = this.namedParameterJdbcTemplate.query(
+                query,
+	            params,
+				BeanPropertyRowMapper.newInstance(Visit.class));
+        return visits;
 	}
 
 }

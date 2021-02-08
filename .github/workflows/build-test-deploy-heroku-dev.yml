@@ -32,7 +32,7 @@ jobs:
       - name: Install Newman (Postman Headless-Runner)
         run: npm install -g newman
       - name: Run Postman Test Collection
-        run: newman run https://www.getpostman.com/collections/aa0611affb8560601a98?apikey=${{secrets.POSTMAN_API_KEY}}
+        run: newman run https://www.getpostman.com/collections/aa0611affb8560601a98?apikey=${{secrets.POSTMAN_API_KEY}} --environment=https://api.getpostman.com/environments/13996277-6c0966fc-233f-40cb-b592-eb2fea7273b0?apikey=${{secrets.POSTMAN_API_KEY}}
 
   Deploy:
     needs: Build-And-Test

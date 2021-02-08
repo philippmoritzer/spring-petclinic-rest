@@ -153,6 +153,31 @@ public class PetRestControllerTests {
         this.mockMvc.perform(get("/api/pets/")
         	.accept(MediaType.APPLICATION_JSON))
             .andExpect(status().isNotFound());
+	}
+
+	@Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetPetSearchSuccess() throws Exception {
+        pets.remove(0);
+        given(this.clinicService.findPetsBySearchTerm("jewel", false)).willReturn(pets);
+        this.mockMvc.perform(get("/api/pets/search?searchTerm=jewel&noLimit=false").accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk()).andExpect(content().contentType("application/json"))
+                .andExpect(content().contentType("application/json"))
+                .andExpect(jsonPath("$.[0].name").value("Jewel"));
+    }
+
+    @Test
+    @WithMockUser(roles = "OWNER_ADMIN")
+    public void testGetPetSearchBadRequest() throws Exception {
+        given(this.clinicService.findPetsBySearchTerm("a", false)).willReturn(pets);
+        this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000000000000000000000000000000000000000000000000000000000&noLimit=false")
+            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest());
+
+        // searchTerm longer than 50 chars
+        this.mockMvc.perform(get("/api/pets/search?searchTerm=ThisIsA51CharacterString00000000000000000000000000000&noLimit=false")
+            .accept(MediaType.APPLICATION_JSON_VALUE).contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(status().isBadRequest());
     }
 
     @Test

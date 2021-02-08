@@ -16,8 +16,11 @@
 
 package org.springframework.samples.petclinic.repository.springdatajpa;
 
+import java.util.Collection;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.context.annotation.Profile;
 import org.springframework.samples.petclinic.model.Pet;
@@ -43,4 +46,18 @@ public class SpringDataPetRepositoryImpl implements PetRepositoryOverride {
         }
 	}
 
+	@Override
+    public Collection<Pet> findBySearchTerm(String searchTerm, boolean noLimit) {
+		TypedQuery<Pet> query = this.em.createQuery("SELECT pet FROM Pet pet WHERE "
+		+ "UPPER(pet.name) LIKE concat('%', UPPER(:searchTerm), '%')"
+		+ "OR UPPER(pet.type.name) LIKE concat('%',UPPER(:searchTerm),'%')"
+		+ "OR UPPER(pet.owner.firstName) LIKE concat('%',UPPER(:searchTerm),'%')"
+		+ "OR UPPER(pet.owner.lastName) LIKE concat('%',UPPER(:searchTerm),'%')", Pet.class);
+		
+        query.setParameter("searchTerm", searchTerm);
+        if (!noLimit){
+			query.setMaxResults(5);  
+		}
+		return query.getResultList();
+	}
 }

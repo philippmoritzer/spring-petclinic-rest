@@ -44,6 +44,16 @@ public interface OwnerRepository {
     Collection<Owner> findByLastName(String lastName) throws DataAccessException;
 
     /**
+     * Retrieve <code>Owner</code>s from the data store by search term, returning all owners who match the search term
+     *
+     * @param searchTerm Value to search for
+     * @param noLimit wether or not limit search results a max amount
+     * @return a <code>Collection</code> of matching <code>Owner</code>s (or an empty <code>Collection</code> if none
+     * found)
+     */
+    Collection<Owner> findBySearchTerm(String searchTerm, boolean noLimit) throws DataAccessException;
+
+    /**
      * Retrieve an <code>Owner</code> from the data store by id.
      *
      * @param id the id to search for
